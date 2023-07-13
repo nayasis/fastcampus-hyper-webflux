@@ -5,11 +5,11 @@ import kotlin.concurrent.thread
 import kotlin.system.measureTimeMillis
 
 fun main() {
-    val latcher = CountDownLatch(200)
+    val latcher = CountDownLatch(5000)
     measureTimeMillis {
         for (i in 1..latcher.count) {
             thread(name = "t-$i") {
-                Thread.sleep(100)
+                Thread.sleep(10_000)
 //                println("done $i : ${Thread.currentThread().name}")
                 latcher.countDown()
             }

@@ -6,7 +6,7 @@ import kotlin.concurrent.thread
 import kotlin.system.measureTimeMillis
 
 fun main() {
-    val latcher = CountDownLatch(200)
+    val latcher = CountDownLatch(1000)
     val sum = AtomicLong()
     measureTimeMillis {
         for (i in 0..latcher.count) {

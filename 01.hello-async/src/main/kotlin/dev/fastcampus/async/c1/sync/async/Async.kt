@@ -1,7 +1,6 @@
-package dev.fastcampus.async.c2.block
+package dev.fastcampus.async.c1.sync.async
 
 import mu.KotlinLogging
-import java.lang.Thread.sleep
 import kotlin.concurrent.thread
 
 private val logger = KotlinLogging.logger {}
@@ -20,6 +19,5 @@ private fun subA() {
 
 private fun subB() {
     logger.debug { "start" }
-    sleep(5000)
     logger.debug { "end" }
 }

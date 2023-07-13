@@ -7,9 +7,9 @@ import kotlin.system.measureTimeMillis
 
 fun main() {
     measureTimeMillis {
-        val latcher = CountDownLatch(200)
+        val latcher = CountDownLatch(5000)
         for(i in 1..latcher.count) {
-            Mono.delay(Duration.ofMillis(100))
+            Mono.delay(Duration.ofMillis(10_000))
                 .doOnNext {
 //                    println("done $i : ${Thread.currentThread().name}")
                     latcher.countDown()

@@ -1,4 +1,4 @@
-package dev.fastcampus.async.c1.async
+package dev.fastcampus.async.c2.sync
 
 import mu.KotlinLogging
 
@@ -18,5 +18,6 @@ private fun subA() {
 
 private fun subB() {
     logger.debug { "start" }
+    Thread.sleep(3000)
     logger.debug { "end" }
 }

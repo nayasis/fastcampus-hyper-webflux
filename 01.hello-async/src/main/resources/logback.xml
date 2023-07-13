@@ -4,10 +4,7 @@
       <pattern>%d{HH:mm:ss.SSS}|%highlight(%-5level)|%green(%t)|%blue(%class{10}.%method)|%msg%n</pattern>
     </encoder>
   </appender>
-<!--  <root level="debug">-->
-<!--    <appender-ref ref="stdout" />-->
-<!--  </root>-->
-  <logger name="dev.fastcampus" level="debug">
+  <logger name="dev.fastcampus" level="trace">
     <appender-ref ref="stdout" />
   </logger>
 </configuration>
