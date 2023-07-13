@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  spring-coroutine:
+    container_name: spring-coroutine
+    image: spring-coroutine:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"

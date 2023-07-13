@@ -1,0 +1,14 @@
+<Configuration>
+  <Appenders>
+    <Console name="console">
+      <PatternLayout disableAnsi="false">
+        <Pattern>%d{yyyy/MM/dd HH:mm:ss.SSS}|%highlight{%-5p}{FATAL=red blink,ERROR=red, WARN=yellow, INFO=green, DEBUG=blue}|%style{%t}{yellow}|%logger|%style{\(%F:%L\)}{blue}|%m%n</Pattern>
+      </PatternLayout>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="debug">
+      <AppenderRef ref="console"/>
+    </Root>
+  </Loggers>
+</Configuration>

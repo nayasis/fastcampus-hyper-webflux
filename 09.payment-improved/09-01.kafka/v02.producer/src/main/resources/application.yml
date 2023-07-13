@@ -1,0 +1,12 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      properties:
+        ## at-least-once 면 충분 (HA 구성시 부하가 높음)
+        enable.idempotence: true
+logging:
+  level:
+    dev.fastcampus.kafka: debug
+  pattern:
+    console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%green(%t)|%blue(\\(%F:%L\\))|%msg%n"

@@ -1,0 +1,79 @@
+### Hello world
+GET {{domain}}/
+Content-Type: application/json
+
+### create #1
+POST {{domain}}/post
+Content-Type: application/json
+
+{
+  "title"    : "test 1",
+  "body"     : "demo 1",
+  "authorId" : 1234
+}
+
+### create #2
+POST {{domain}}/post
+Content-Type: application/json
+
+{
+  "title"    : "test 2",
+  "body"     : "demo 2",
+  "authorId" : 1234
+}
+
+### create #3
+POST {{domain}}/post
+Content-Type: application/json
+
+{
+  "title"    : "test 3",
+  "body"     : "demo 3",
+  "authorId" : 1234
+}
+
+### create (error)
+POST {{domain}}/post
+Content-Type: application/json
+
+{
+  "title"    : "error",
+  "body"     : "demo 3",
+  "authorId" : 1234
+}
+
+### update
+PUT {{domain}}/post/1
+Content-Type: application/json
+
+{
+  "authorId" : 99369
+}
+
+### update (error)
+PUT {{domain}}/post/-1
+Content-Type: application/json
+
+{
+  "authorId" : 99369
+}
+
+### get all
+GET {{domain}}/post/all
+Content-Type: application/json
+
+### get all by condition
+GET {{domain}}/post/all?title=2
+Content-Type: application/json
+
+### get
+GET {{domain}}/post/1
+Content-Type: application/json
+
+### get (error)
+GET {{domain}}/post/-1
+Content-Type: application/json
+
+### delete
+DELETE {{domain}}/post/2
+Content-Type: application/json

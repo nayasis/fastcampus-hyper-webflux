@@ -1,0 +1,17 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      group-id: kafka-1
+    listener:
+      immediate-stop: false
+    streams:
+      application-id: kafka-2
+#    admin:
+#      auto-create: true
+logging:
+  level:
+    dev.fastcampus.kafka: debug
+  pattern:
+    console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%green(%t)|%blue(\\(%F:%L\\))|%msg%n"

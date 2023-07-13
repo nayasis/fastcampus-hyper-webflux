@@ -1,0 +1,58 @@
+spring:
+  profiles:
+    active: local
+---
+spring:
+  application:
+    name: spring-mvc
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    url: jdbc:mariadb://localhost:3306/sample
+#    driver-class-name: org.h2.Driver
+    driver-class-name: org.mariadb.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      auto-commit: false
+      transaction-isolation: TRANSACTION_READ_COMMITTED
+      username: user
+      password: 1234
+  jpa:
+#    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+  sql:
+    init:
+      mode: never
+#      mode: embedded
+      schema-locations: classpath:db-init/schema.sql
+      data-locations: classpath:db-init/data.sql
+#      schema-locations: classpath:db-init/test.sql
+server:
+  error:
+    include-exception: true
+    include-message: always
+    include-stacktrace: never
+  port: 8080
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
+    dev.fastcampus: debug
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  sql:
+    init:
+      mode: never
