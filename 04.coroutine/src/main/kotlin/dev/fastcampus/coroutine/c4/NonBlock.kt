@@ -1,33 +1,36 @@
-package dev.fastcampus.coroutine.c2.async.nonblock
+package dev.fastcampus.coroutine.c4
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
-@OptIn(ExperimentalCoroutinesApi::class)
 suspend fun main() {
-    logger.debug { "start" }
     val dispatcher = Dispatchers.Default.limitedParallelism(1)
     coroutineScope {
         launch(dispatcher) {
-            subA()
+            heavy()
         }
         launch(dispatcher) {
-            subA()
+            soft()
         }
+    }
+}
+
+private suspend fun soft() {
+    logger.debug { "start" }
+    delay(1000)
+    logger.debug { "end" }
+}
+
+private suspend fun heavy() {
+    logger.debug { "start" }
+    while (true) {
+        delay(100)
     }
     logger.debug { "end" }
 }
 
-private suspend fun subA() {
-    logger.debug { "start" }
-    subB()
-    logger.debug { "end" }
-}
-
-private suspend fun subB() {
-    logger.debug { "start" }
-    delay(5000)
-    logger.debug { "end" }
-}

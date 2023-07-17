@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.c2.async.nonblock
+package dev.fastcampus.coroutine.c3.async.nonblock
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

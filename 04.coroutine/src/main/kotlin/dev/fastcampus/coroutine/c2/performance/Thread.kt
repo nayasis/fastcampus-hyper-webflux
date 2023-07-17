@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.c1.performance
+package dev.fastcampus.coroutine.c2.performance
 
 import mu.KotlinLogging
 import java.util.concurrent.CountDownLatch

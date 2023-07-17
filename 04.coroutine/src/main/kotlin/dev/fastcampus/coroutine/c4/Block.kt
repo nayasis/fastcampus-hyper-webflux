@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.ch4
+package dev.fastcampus.coroutine.c4
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -26,10 +26,10 @@ private suspend fun soft() {
     logger.debug { "end" }
 }
 
-private suspend fun heavy() {
+private fun heavy() {
     logger.debug { "start" }
     while (true) {
-        delay(100)
+        Thread.sleep(100)
     }
     logger.debug { "end" }
 }
