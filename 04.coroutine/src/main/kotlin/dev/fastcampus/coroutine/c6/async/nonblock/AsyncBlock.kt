@@ -1,14 +1,16 @@
-package dev.fastcampus.coroutine.c3.async.nonblock
+package dev.fastcampus.coroutine.c6.async.nonblock
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
-@OptIn(ExperimentalCoroutinesApi::class)
 suspend fun main() {
     logger.debug { "start" }
-    val dispatcher = Dispatchers.Default.limitedParallelism(1)
+    val dispatcher = newSingleThreadContext("single")
     coroutineScope {
         launch(dispatcher) {
             subA()
@@ -28,6 +30,6 @@ private suspend fun subA() {
 
 private suspend fun subB() {
     logger.debug { "start" }
-    delay(5000)
+    Thread.sleep(5000)
     logger.debug { "end" }
 }

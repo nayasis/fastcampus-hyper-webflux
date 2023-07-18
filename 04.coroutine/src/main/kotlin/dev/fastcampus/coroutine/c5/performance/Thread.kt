@@ -1,7 +1,8 @@
-package dev.fastcampus.coroutine.c2.performance
+package dev.fastcampus.coroutine.c5.performance
 
 import mu.KotlinLogging
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.concurrent.thread
 import kotlin.system.measureTimeMillis
 
@@ -9,15 +10,17 @@ private val logger = KotlinLogging.logger {}
 
 fun main() {
     val latcher = CountDownLatch(10_000)
+    var sum = AtomicLong()
     measureTimeMillis {
-        for(i in 1..latcher.count) {
+        repeat(latcher.count.toInt()) { i ->
             thread(name="t-$i") {
-                for(i in 1..1000) {
-                    println("[${Thread.currentThread().name}] $i")
+                repeat(1000) {
+                    sum.addAndGet(1)
+//                    println("[${Thread.currentThread().name}] $i")
                 }
                 latcher.countDown()
             }
         }
         latcher.await()
-    }.let { logger.debug { ">> done (${it}ms)" } }
+    }.let { logger.debug(">> sum: $sum, done $it ms") }
 }

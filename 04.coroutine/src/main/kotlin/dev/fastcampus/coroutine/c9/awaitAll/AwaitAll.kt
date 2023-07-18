@@ -1,0 +1,47 @@
+package dev.fastcampus.coroutine.c9.awaitAll
+
+import dev.fastcampus.coroutine.s2.logger
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
+import kotlin.time.Duration.Companion.seconds
+
+private val logger = KotlinLogging.logger {}
+
+suspend fun downloadA() {
+    repeat(1) {
+        logger.debug { "download A" }
+        delay(1.seconds)
+    }
+}
+
+suspend fun downloadB() {
+    repeat(3) {
+        logger.debug { "download B" }
+        delay(1.seconds)
+    }
+}
+
+suspend fun downloadC() {
+    repeat(5) {
+        logger.debug { "download C" }
+        delay(1.seconds)
+    }
+}
+
+suspend fun main() {
+    coroutineScope {
+//        launch { downloadA() }
+//        launch { downloadB() }
+//        launch { downloadC() }
+        listOf(
+            launch { downloadA() },
+            launch { downloadB() },
+            launch { downloadC() },
+        ).joinAll()
+        logger.debug { ">> done" }
+    }
+}
