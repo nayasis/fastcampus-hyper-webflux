@@ -1,23 +1,27 @@
-package dev.fastcampus.async.c2.sync
+package dev.fastcampus.async.c1.sync.async
 
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
 fun main() {
-    logger.debug { "start" }
     subA()
-    logger.debug { "end" }
+    subB()
+    subC()
 }
+
 
 private fun subA() {
     logger.debug { "start" }
-    subB()
     logger.debug { "end" }
 }
 
 private fun subB() {
     logger.debug { "start" }
-    Thread.sleep(3000)
+    logger.debug { "end" }
+}
+
+private fun subC() {
+    logger.debug { "start" }
     logger.debug { "end" }
 }
