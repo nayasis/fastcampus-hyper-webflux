@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.s2
+package dev.fastcampus.coroutine.c7.launch.async
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
