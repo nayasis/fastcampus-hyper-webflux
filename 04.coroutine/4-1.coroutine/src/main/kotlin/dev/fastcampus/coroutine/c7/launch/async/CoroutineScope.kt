@@ -11,6 +11,9 @@ import kotlin.time.Duration.Companion.seconds
 
 val logger = KotlinLogging.logger {}
 
+// sequence
+// 세수 -> 물 끓이기 -> 커피 만들기 -> 빵 만들기 -> 아침 먹기
+
 suspend inline fun task(name: String, duration: Duration, action: (() -> Unit) = {}) {
     logger.debug { ">> $name : start" }
     action.invoke()
@@ -44,8 +47,8 @@ suspend fun eatBreakfast(foods: List<String>) {
 
 suspend fun main() {
     coroutineScope {
-        launch { washFace() }
         launch { boilWater() }
+        launch { washFace() }
     }
     coroutineScope {
         val onCoffee = async { makeCoffee() }
