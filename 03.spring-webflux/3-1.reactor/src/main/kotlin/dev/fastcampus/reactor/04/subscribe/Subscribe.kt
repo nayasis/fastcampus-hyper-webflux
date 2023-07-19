@@ -2,13 +2,16 @@ package dev.fastcampus.reactor.`04`.subscribe
 
 import mu.KotlinLogging
 import reactor.core.publisher.Flux
+import reactor.core.scheduler.Scheduler
 import reactor.core.scheduler.Schedulers
+import java.util.concurrent.Executors
 
 private val logger = KotlinLogging.logger {}
 
 fun main() {
 
-    val customScheduler = Schedulers.newParallel("custom", 2)
+//    val customScheduler = Schedulers.newParallel("custom", 2)
+    val customScheduler = Executors.newFixedThreadPool(2).let { Schedulers.fromExecutor(it) }
 
     Flux.range(1,100)
         .doOnNext { logger.debug { "1st : $it" } }
