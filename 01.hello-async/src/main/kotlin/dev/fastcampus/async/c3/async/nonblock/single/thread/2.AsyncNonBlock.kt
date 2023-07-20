@@ -1,34 +1,42 @@
 package dev.fastcampus.async.c3.async.nonblock.single.thread
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
 import mu.KotlinLogging
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
+import java.time.Duration
 
 private val logger = KotlinLogging.logger {}
 
-@OptIn(DelicateCoroutinesApi::class)
-suspend fun main() {
-    val singleThread = newSingleThreadContext("single")
-    coroutineScope {
-        launch(singleThread) { workHard() }
-        launch(singleThread) { drinkCoffee() }
-    }
+val single = Schedulers.newSingle("single")
+
+fun main() {
+
+    drinkCoffee().subscribe()
+    workHard().blockLast()
+
 }
 
-private suspend fun workHard() {
-    logger.debug { "start hard work" }
-    while (true) {
-        delay(1000)
-    }
-    logger.debug { "end hard work" }
+private fun workHard(): Flux<*> {
+    return Flux.interval(Duration.ofMillis(500))
+        .publishOn(single)
+        .doOnNext {
+            logger.debug { "processing" }
+        }.doFinally {
+            logger.debug { "end hard work" }
+        }.doFirst {
+            logger.debug { "start hard work" }
+        }.subscribeOn(single)
 }
 
-private suspend fun drinkCoffee() {
-    delay(1000)
-    logger.debug { "make coffee" }
-    delay(1000)
-    logger.debug { "drink coffee" }
+private fun drinkCoffee(): Mono<*> {
+    return Mono.delay(Duration.ofSeconds(1))
+        .publishOn(single)
+        .doOnNext { logger.debug { "make coffee" } }
+        .delayElement(Duration.ofSeconds(1))
+        .publishOn(single)
+        .doOnNext {
+            logger.debug { "drink coffee" }
+        }
+        .subscribeOn(single)
 }
