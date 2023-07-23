@@ -1,2 +1,6 @@
 03.spring-webflux/.gradle
 99.ppt/~$*.pptx
+.idea
+*/.gradle
+*/build/
+*/gradle/
