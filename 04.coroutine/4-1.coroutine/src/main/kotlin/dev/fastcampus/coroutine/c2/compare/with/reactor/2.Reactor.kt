@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.c3.compare.with.reactor
+package dev.fastcampus.coroutine.c2.compare.with.reactor
 
 import mu.KotlinLogging
 import reactor.core.publisher.Mono
@@ -20,33 +20,27 @@ private fun runSequentially() {
 }
 
 private fun runSimultaneously() {
-    val latcher = CountDownLatch(3)
-    subA().subscribe{ latcher.countDown() }
-    subB().subscribe{ latcher.countDown() }
-    subC().subscribe{ latcher.countDown() }
-    latcher.await()
+    Mono.zip(
+        subA(),
+        subB(),
+        subC()
+    ).block()
 }
 
 private fun subA(): Mono<Unit> {
     return Mono.fromCallable{ logger.debug {"start"} }
         .delayElement(Duration.ofSeconds(1))
-        .doOnNext {
-            logger.debug {"end"}
-        }
+        .doOnNext { logger.debug {"end"} }
 }
 
 private fun subB(): Mono<Unit> {
     return Mono.fromCallable{ logger.debug {"start"} }
         .delayElement(Duration.ofSeconds(1))
-        .doOnNext {
-            logger.debug {"end"}
-        }
+        .doOnNext { logger.debug {"end"} }
 }
 
 private fun subC(): Mono<Unit> {
     return Mono.fromCallable{ logger.debug {"start"} }
         .delayElement(Duration.ofSeconds(1))
-        .doOnNext {
-            logger.debug {"end"}
-        }
+        .doOnNext { logger.debug {"end"} }
 }

@@ -1,10 +1,7 @@
 package dev.fastcampus.coroutine.c5.performance
 
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.system.measureTimeMillis
@@ -20,7 +17,7 @@ fun main() {
                     repeat(1000) {
                         sum.addAndGet(1)
                     }
-                    println("[${Thread.currentThread().name}] $i : $sum")
+//                    println("[${Thread.currentThread().name}] $i : $sum")
                 }
             }
         }

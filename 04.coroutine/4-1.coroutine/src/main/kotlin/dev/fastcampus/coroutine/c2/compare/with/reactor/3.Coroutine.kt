@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.c3.compare.with.reactor
+package dev.fastcampus.coroutine.c2.compare.with.reactor
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay

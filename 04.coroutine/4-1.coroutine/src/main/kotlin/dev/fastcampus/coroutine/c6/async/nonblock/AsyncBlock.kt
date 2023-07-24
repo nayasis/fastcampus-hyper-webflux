@@ -21,13 +21,13 @@ suspend fun main() {
     logger.debug { "end" }
 }
 
-private suspend fun subA() {
+private fun subA() {
     logger.debug { "start" }
     workHard()
     logger.debug { "end" }
 }
 
-private suspend fun workHard() {
+private fun workHard() {
     logger.debug { "start" }
     Thread.sleep(5000)
     logger.debug { "end" }

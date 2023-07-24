@@ -1,11 +1,9 @@
-package dev.fastcampus.coroutine.c9.awaitAll
+package dev.fastcampus.coroutine.c7.awaitAll
 
-import dev.fastcampus.coroutine.c7.launch.async.logger
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import kotlin.time.Duration.Companion.seconds
 

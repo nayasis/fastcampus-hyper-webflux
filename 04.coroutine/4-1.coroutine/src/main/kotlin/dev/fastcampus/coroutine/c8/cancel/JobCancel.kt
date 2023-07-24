@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.cA.cancel
+package dev.fastcampus.coroutine.c8.cancel
 
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancelAndJoin
