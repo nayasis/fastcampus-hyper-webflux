@@ -1,4 +1,4 @@
-package dev.fastcampus.async.c5.threadcost
+package dev.fastcampus.async.c3.threadcost
 
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicLong

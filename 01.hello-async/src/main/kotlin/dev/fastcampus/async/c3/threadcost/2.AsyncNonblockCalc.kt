@@ -1,25 +1,17 @@
-package dev.fastcampus.async.c5.threadcost
+package dev.fastcampus.async.c3.threadcost
 
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import reactor.core.publisher.Flux
-import reactor.core.scheduler.Schedulers
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.system.measureTimeMillis
 
 fun main() {
-    val latcher = CountDownLatch(10_000)
     val sum = AtomicLong()
     measureTimeMillis {
-        Flux.range(1, latcher.count.toInt()).doOnNext {
+        Flux.range(1, 10_000).doOnNext {
             Flux.range(1, 100_000).doOnNext {
                 sum.addAndGet(1)
-            }.doFinally {
-                latcher.countDown()
             }.subscribe()
-        }.subscribe()
-        latcher.await()
+        }.blockLast()
     }.let { println(">> sum: $sum, elapsed: $it ms") }
 }
 
