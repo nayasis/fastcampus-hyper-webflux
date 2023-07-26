@@ -47,7 +47,7 @@ class Order {
         this.billPrice = billPrice
     }
 
-    override fun equals( other:Any? ): Boolean = kotlinEquals(other, arrayOf(Order::id))
+    override fun equals(other:Any?): Boolean = kotlinEquals(other, arrayOf(Order::id))
     override fun hashCode(): Int = kotlinHashCode(arrayOf(Order::id))
     override fun toString(): String = kotlinToString(arrayOf(
         Order::id,
