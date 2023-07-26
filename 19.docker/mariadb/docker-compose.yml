@@ -3,11 +3,14 @@ services:
   db:
     image: mariadb:latest
     container_name: mariadb
+    restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     ports:
       - "3306:3306"
-    environment :
+    volumes: 
+      - ./init:/docker-entrypoint-initdb.d
+    environment:
       MYSQL_ROOT_PASSWORD : root
-      MYSQL_DATABASE      : payment
+      MYSQL_DATABASE      : sample
       MYSQL_USER          : user
       MYSQL_PASSWORD      : 1234
