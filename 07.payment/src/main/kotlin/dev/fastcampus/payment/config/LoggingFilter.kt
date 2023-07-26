@@ -21,7 +21,7 @@ import java.util.*
 private val logger = KotlinLogging.logger {}
 
 @Component
-@Order(1)
+@Order(2)
 class LoggingFilter: WebFilter {
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
         val requestLoggingDecorator = object: ServerHttpRequestDecorator(exchange.request) {

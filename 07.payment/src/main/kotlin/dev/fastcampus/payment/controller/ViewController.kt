@@ -30,4 +30,19 @@ class ViewController(
         return "hello.html"
     }
 
+    @RequestMapping("/payment")
+    suspend fun pay(): String {
+        return "payment.html"
+    }
+
+    @RequestMapping("/payment/success")
+    suspend fun isPaymentSuccessed() {
+
+    }
+
+    @RequestMapping("/payment/failed")
+    suspend fun isPaymentFailed() {
+
+    }
+
 }
