@@ -29,8 +29,7 @@ class Product {
     var updatedAt: LocalDateTime? = null
 
     constructor()
-    constructor(id: Long, name: String, price: Long, hashtag: Set<String>? = null) {
-        this.id      = id
+    constructor(name: String, price: Long, hashtag: Set<String>? = null) {
         this.name    = name
         this.price   = price
         this.hashtag = hashtag
@@ -38,5 +37,8 @@ class Product {
 
     override fun equals( other:Any? ): Boolean = kotlinEquals(other, arrayOf(Product::id))
     override fun hashCode(): Int = kotlinHashCode(arrayOf(Product::id))
+    override fun toString(): String {
+        return "Product(id=$id, name='$name', price=$price, hashtag=$hashtag, createdAt=$createdAt, updatedAt=$updatedAt)"
+    }
 
 }

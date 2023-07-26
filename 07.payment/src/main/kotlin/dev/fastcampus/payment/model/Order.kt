@@ -48,5 +48,8 @@ class Order {
 
     override fun equals( other:Any? ): Boolean = kotlinEquals(other, arrayOf(Order::id))
     override fun hashCode(): Int = kotlinHashCode(arrayOf(Order::id))
+    override fun toString(): String {
+        return "Order(id=$id, userId=$userId, prodId=$prodId, prodPrice=$prodPrice, billPrice=$billPrice, txid=$txid, status=$status, createdAt=$createdAt, updatedAt=$updatedAt)"
+    }
 
 }

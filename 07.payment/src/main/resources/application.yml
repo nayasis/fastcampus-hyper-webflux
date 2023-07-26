@@ -8,10 +8,16 @@ spring:
     url: r2dbc:pool:mariadb://localhost:3306/payment
     username: user
     password: 1234
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db-init/schema.sql
   data:
     redis:
       host: localhost
       port: 6379
+#  thymeleaf:
+#    cache: false
 server:
   shutdown: graceful
   compression:
