@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.config
+package dev.fastcampus.payment.config
 
 import mu.KotlinLogging
 import org.slf4j.MDC

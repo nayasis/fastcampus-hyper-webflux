@@ -36,13 +36,13 @@ class ViewController(
     }
 
     @RequestMapping("/payment/success")
-    suspend fun isPaymentSuccessed() {
-
+    suspend fun isPaymentSuccessed(): String {
+        return "payment_success.html"
     }
 
     @RequestMapping("/payment/failed")
-    suspend fun isPaymentFailed() {
-
+    suspend fun isPaymentFailed(): String {
+        return "payment_fail.html"
     }
 
 }

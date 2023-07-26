@@ -1,9 +1,5 @@
-package dev.fastcampus.coroutine.config
+package dev.fastcampus.payment.config
 
-import io.micrometer.context.ContextSnapshot
-import io.micrometer.observation.contextpropagation.ObservationThreadLocalAccessor
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.buffer.DataBuffer

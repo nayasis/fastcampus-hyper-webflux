@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.config
+package dev.fastcampus.payment.config
 
 import kotlinx.coroutines.slf4j.MDCContext
 import org.aspectj.lang.ProceedingJoinPoint
