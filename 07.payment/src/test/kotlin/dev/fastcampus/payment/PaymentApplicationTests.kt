@@ -38,7 +38,7 @@ class PaymentApplicationTests(
 			}
 
 			productRepository.findAll().toList().let {
-				logger.debug { it }
+				logger.debug { it.joinToString("\n","\n") }
 			}
 
 		}

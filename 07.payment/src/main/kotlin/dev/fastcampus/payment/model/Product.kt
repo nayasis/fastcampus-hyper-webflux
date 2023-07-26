@@ -2,6 +2,7 @@ package dev.fastcampus.payment.model
 
 import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
+import au.com.console.kassava.kotlinToString
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -37,8 +38,13 @@ class Product {
 
     override fun equals( other:Any? ): Boolean = kotlinEquals(other, arrayOf(Product::id))
     override fun hashCode(): Int = kotlinHashCode(arrayOf(Product::id))
-    override fun toString(): String {
-        return "Product(id=$id, name='$name', price=$price, hashtag=$hashtag, createdAt=$createdAt, updatedAt=$updatedAt)"
-    }
+    override fun toString(): String = kotlinToString(arrayOf(
+        Product::id,
+        Product::name,
+        Product::price,
+        Product::hashtag,
+        Product::createdAt,
+        Product::updatedAt
+    ))
 
 }

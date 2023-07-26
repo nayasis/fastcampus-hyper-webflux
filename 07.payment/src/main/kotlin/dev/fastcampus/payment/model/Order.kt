@@ -2,6 +2,7 @@ package dev.fastcampus.payment.model
 
 import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
+import au.com.console.kassava.kotlinToString
 import dev.fastcampus.payment.common.Beans
 import dev.fastcampus.payment.model.enum.TxStatus
 import org.springframework.data.annotation.CreatedDate
@@ -48,8 +49,16 @@ class Order {
 
     override fun equals( other:Any? ): Boolean = kotlinEquals(other, arrayOf(Order::id))
     override fun hashCode(): Int = kotlinHashCode(arrayOf(Order::id))
-    override fun toString(): String {
-        return "Order(id=$id, userId=$userId, prodId=$prodId, prodPrice=$prodPrice, billPrice=$billPrice, txid=$txid, status=$status, createdAt=$createdAt, updatedAt=$updatedAt)"
-    }
+    override fun toString(): String = kotlinToString(arrayOf(
+        Order::id,
+        Order::userId,
+        Order::prodId,
+        Order::prodPrice,
+        Order::billPrice,
+        Order::txid,
+        Order::status,
+        Order::createdAt,
+        Order::updatedAt
+    ))
 
 }
