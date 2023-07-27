@@ -7,6 +7,12 @@ import org.springframework.boot.runApplication
 import org.springframework.data.r2dbc.config.EnableR2dbcAuditing
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import reactor.core.publisher.Hooks
+import java.security.GeneralSecurityException
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
 
 @SpringBootApplication
 @EnableR2dbcAuditing

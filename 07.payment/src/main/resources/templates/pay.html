@@ -10,8 +10,10 @@
 <!-- 결제하기 버튼 -->
 <button id="payment-button">결제하기</button>
 <script>
-    const clientKey = "test_ck_LBa5PzR0ArnQGB4BdGaVvmYnNeDM"
-    const customerKey = "4g6A93NI1wzX0LPFNom0K" // 내 상점에서 고객을 구분하기 위해 발급한 고객의 고유 ID
+
+    const clientKey = "test_ck_kZLKGPx4M3Ml6zjRqkE8BaWypv1o"
+    const customerKey = "4g6A93NI1wzX0LPFNom01" // 내 상점에서 고객을 구분하기 위해 발급한 고객의 고유 ID
+
     const button = document.getElementById("payment-button")
 
     // ------  결제위젯 초기화 ------
@@ -35,8 +37,8 @@
     // https://docs.tosspayments.com/reference/widget-sdk#requestpayment결제-정보
     button.addEventListener("click", function () {
         paymentWidget.requestPayment({
-            orderId: "clHvBUosxOLOv-HsHsNv_",            // 주문 ID(직접 만들어주세요)
-            orderName: "티셔츠 외 2건",                 // 주문명
+            orderId: "ord-98234254",     // 주문 ID(직접 만들어주세요)
+            orderName: "티셔츠 외 2건",  // 주문명
             successUrl: "http://localhost:8080/payment/success",  // 결제에 성공하면 이동하는 페이지(직접 만들어주세요)
             failUrl: "http://localhost:8080/payment/fail",        // 결제에 실패하면 이동하는 페이지(직접 만들어주세요)
             customerEmail: "customer.test@gmail.com",
