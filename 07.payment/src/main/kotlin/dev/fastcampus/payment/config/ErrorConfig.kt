@@ -30,7 +30,6 @@ class ErrorConfig {
                 }
                 try {
                     return super.getErrorAttributes(request, options).apply {
-                        logger.debug { "on error 2" }
                         val attr = this
                         // 기존 requestId 는 ObjectUtils.getIdentityHexString 에서 생성한다.
                         // 이는 request 객체를 식별하는 hashcode를 반환하는 native method 로

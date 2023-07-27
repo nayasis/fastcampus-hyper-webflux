@@ -1,6 +1,9 @@
 package dev.fastcampus.payment.controller
 
+import dev.fastcampus.payment.model.Order
+import dev.fastcampus.payment.model.enum.TxStatus
 import dev.fastcampus.payment.repository.ProductRepository
+import dev.fastcampus.payment.service.OrderService
 import dev.fastcampus.payment.service.PaymentService
 import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
@@ -15,6 +18,7 @@ private val logger = KotlinLogging.logger {}
 @Controller
 class ViewController(
     private val productRepository: ProductRepository,
+    private val orderService: OrderService,
     private val paymentService: PaymentService,
 ) {
 
@@ -32,15 +36,18 @@ class ViewController(
         return "hello.html"
     }
 
-    @RequestMapping("/pay")
-    suspend fun pay(): String {
+    @GetMapping("/pay")
+    suspend fun pay(reqPay: ReqPay, model: Model): String {
+        val order = orderService.create(reqPay.userId, reqPay.prodId)
+        model.addAttribute("order", ResOrder.fromOrder(order))
         return "pay.html"
     }
 
     @GetMapping("/payment/success")
-    suspend fun isPaymentSuccessed(request: PaymentSuccess): String {
-        paymentService.confirm(request)
-        return "payment_success.html"
+    suspend fun isPaymentSuccessed(request: PaymentSuccess, model: Model): String {
+        return if(paymentService.confirm(request)) "payment_success.html" else {
+            "payment_fail.html"
+        }
     }
 
     @RequestMapping("/payment/fail")
@@ -50,6 +57,26 @@ class ViewController(
 
 }
 
+data class ResOrder(
+    val userId: String,
+    val orderId: String,
+    val description: String,
+    val amount: Long,
+    val status: TxStatus,
+) {
+     companion object {
+         suspend fun fromOrder(order: Order): ResOrder {
+             return ResOrder(
+                 "user-${order.userId}",
+                 order.paymentOrderId ?: "",
+                 order.getProduct()?.name ?: "",
+                 order.amount,
+                 order.status,
+             )
+         }
+     }
+}
+
 data class ReqPay(
     val userId: Long,
     val prodId: Long,
@@ -57,7 +84,7 @@ data class ReqPay(
 
 data class PaymentSuccess(
     val paymentType: String,
-    val orderId: String,
+    var orderId: String,
     val paymentKey: String,
     val amount: Long,
 )

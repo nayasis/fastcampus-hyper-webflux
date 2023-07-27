@@ -2,10 +2,11 @@ CREATE TABLE IF NOT EXISTS TB_ORDER (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT,
     prod_id BIGINT,
-    prod_price BIGINT,
-    bill_price BIGINT,
+    description VARCHAR(2000),
+    amount  BIGINT,
     txid VARCHAR(100),
-    status INT,
+    status VARCHAR(20),
+    payment_order_id VARCHAR(37),
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );

@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface OrderRepository: CoroutineCrudRepository<Order, Long> {
+
+    suspend fun findByPaymentOrderId(id: String): Order?
+
 }

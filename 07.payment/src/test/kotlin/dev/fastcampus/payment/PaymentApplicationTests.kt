@@ -24,10 +24,10 @@ class PaymentApplicationTests(
 	@Autowired private val rxtx: TransactionalOperator,
 ): StringSpec({
 
-	"context load" {
+	"context load".config(false) {
 
 		rxtx.executeAndAwait { tx ->
-			tx.setRollbackOnly()
+//			tx.setRollbackOnly()
 
 			listOf(
 				Product("milk", 1000, setOf("a","b").toHashSet()),

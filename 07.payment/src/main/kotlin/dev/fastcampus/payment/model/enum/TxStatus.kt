@@ -1,21 +1,13 @@
 package dev.fastcampus.payment.model.enum
 
-import com.fasterxml.jackson.annotation.JsonFormat
+enum class TxStatus {
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-enum class TxStatus(val code: Int, val desc: String) {
-
-    NONE(0, "none"),
-    CREATE(1, "create"),
-    REQUEST_CONFIRM(2, "request confirm"),
-    SUCCESS(3, "success"),
-    FAIL(4, "fail"),
+    NONE,
+    CREATE,
+    REQUEST_CONFIRM,
+    SUCCESS,
+    FAIL,
+    NEED_CHECK
     ;
-
-    companion object {
-        fun of(code: Int): TxStatus {
-            return values().firstOrNull { it.code == code } ?: NONE
-        }
-    }
 
 }

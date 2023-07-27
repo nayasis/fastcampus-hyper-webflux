@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
+import java.util.UUID
 import javax.annotation.processing.Generated
 
 @Table("TB_ORDER")
@@ -23,13 +24,15 @@ class Order {
 
     var prodId: Long? = null
 
-    var prodPrice: Long = 0
+    var description: String? = null
 
-    var billPrice: Long = 0
+    var amount: Long = 0
 
-    val txid: String? = null
+    var txid: String? = null
 
-    val status: TxStatus = TxStatus.NONE
+    var status: TxStatus = TxStatus.CREATE
+
+    var paymentOrderId: String? = null
 
     @CreatedDate
     var createdAt: LocalDateTime? = null
@@ -41,10 +44,13 @@ class Order {
         return prodId?.let { Beans.productRepository.findById(it) }
     }
 
-    constructor(userId: Long?, prodId: Long?, billPrice: Long) {
+    constructor()
+    constructor(userId: Long, prodId: Long, price: Long, description: String) {
         this.userId = userId
         this.prodId = prodId
-        this.billPrice = billPrice
+        this.amount  = price
+        this.description = description
+        this.paymentOrderId = "${UUID.randomUUID()}"
     }
 
     override fun equals(other:Any?): Boolean = kotlinEquals(other, arrayOf(Order::id))
@@ -53,8 +59,7 @@ class Order {
         Order::id,
         Order::userId,
         Order::prodId,
-        Order::prodPrice,
-        Order::billPrice,
+        Order::amount,
         Order::txid,
         Order::status,
         Order::createdAt,
