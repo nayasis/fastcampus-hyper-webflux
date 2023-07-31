@@ -1,6 +1,6 @@
 package dev.fastcampus.coroutine.service
 
-import dev.fastcampus.coroutine.repository.PostRepository
+import dev.fastcampus.coroutine.repository.ArticleRepository
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toList
@@ -21,7 +21,7 @@ private val logger = KotlinLogging.logger {}
 
 @Service
 class TestService(
-    private val repository: PostRepository,
+    private val repository: ArticleRepository,
 ) {
 
     suspend fun testMdcLogging(): String? {

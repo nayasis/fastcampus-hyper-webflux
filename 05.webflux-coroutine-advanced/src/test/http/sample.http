@@ -3,7 +3,7 @@ GET {{domain}}/
 Content-Type: application/json
 
 ### create #1
-POST {{domain}}/post
+POST {{domain}}/article
 Content-Type: application/json
 
 {
@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ### create #2
-POST {{domain}}/post
+POST {{domain}}/article
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 }
 
 ### create #3
-POST {{domain}}/post
+POST {{domain}}/article
 Content-Type: application/json
 
 {
@@ -33,7 +33,7 @@ Content-Type: application/json
 }
 
 ### create (error)
-POST {{domain}}/post
+POST {{domain}}/article
 Content-Type: application/json
 
 {
@@ -43,7 +43,7 @@ Content-Type: application/json
 }
 
 ### update
-PUT {{domain}}/post/1
+PUT {{domain}}/article/1
 Content-Type: application/json
 
 {
@@ -51,7 +51,7 @@ Content-Type: application/json
 }
 
 ### update (error)
-PUT {{domain}}/post/-1
+PUT {{domain}}/article/-1
 Content-Type: application/json
 
 {
@@ -59,23 +59,23 @@ Content-Type: application/json
 }
 
 ### get all
-GET {{domain}}/post/all
+GET {{domain}}/article/all
 Content-Type: application/json
 
 ### get all by condition
-GET {{domain}}/post/all?title=2
+GET {{domain}}/article/all?title=2
 Content-Type: application/json
 
 ### get
-GET {{domain}}/post/1
+GET {{domain}}/article/1
 Content-Type: application/json
 
 ### get (error)
-GET {{domain}}/post/-1
+GET {{domain}}/article/-1
 Content-Type: application/json
 
 ### delete
-DELETE {{domain}}/post/2
+DELETE {{domain}}/article/2
 Content-Type: application/json
 
 ##### Advanced cource

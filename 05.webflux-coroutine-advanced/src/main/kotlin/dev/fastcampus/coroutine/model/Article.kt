@@ -9,8 +9,8 @@ import java.io.Serializable
 import java.time.LocalDateTime
 import javax.annotation.processing.Generated
 
-@Table("TB_POST")
-class Post: Serializable {
+@Table("TB_ARTICLE")
+class Article: Serializable {
 
     @Id
     @Generated
