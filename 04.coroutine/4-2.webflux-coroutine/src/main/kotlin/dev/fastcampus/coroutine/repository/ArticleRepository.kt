@@ -1,13 +1,13 @@
 package dev.fastcampus.coroutine.repository
 
-import dev.fastcampus.coroutine.model.Post
+import dev.fastcampus.coroutine.model.Article
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface PostRepository: CoroutineCrudRepository<Post,Long> {
+interface ArticleRepository: CoroutineCrudRepository<Article,Long> {
 
-    suspend fun findAllByTitleContains(title: String): Flow<Post>
+    suspend fun findAllByTitleContains(title: String): Flow<Article>
 
 }

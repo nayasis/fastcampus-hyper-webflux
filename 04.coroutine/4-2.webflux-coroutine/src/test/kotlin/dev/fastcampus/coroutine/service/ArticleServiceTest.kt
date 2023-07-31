@@ -23,8 +23,8 @@ private val logger = KotlinLogging.logger {}
 // Kotest에서 아래 annotation은 작동하지 않는다.
 ////@Transactional
 //@Sql("classpath:db-init/test.sql")
-class PostServiceTest(
-    @Autowired private val postService: PostService,
+class ArticleServiceTest(
+    @Autowired private val articleService: ArticleService,
     @Autowired private val rxtx: TransactionalOperator,
     @Autowired private val client: DatabaseClient,
 ): StringSpec({
@@ -37,29 +37,29 @@ class PostServiceTest(
         }.block()
     }
 
-    suspend fun getPostSize() = postService.getAll().toList().size
+    suspend fun getArticleSize() = articleService.getAll().toList().size
 
     "get all" {
-        assertEquals(3, postService.getAll().toList().size)
-        assertEquals(1, postService.getAll("2").toList().size)
+        assertEquals(3, articleService.getAll().toList().size)
+        assertEquals(1, articleService.getAll("2").toList().size)
     }
 
     "get" {
-        postService.get(1).let {
+        articleService.get(1).let {
             it.title shouldBe  "title 1"
             it.body shouldBe "blabla 01"
             it.authorId shouldBe 1234
         }
         shouldThrow<NotFoundException> {
-            postService.get(-1)
+            articleService.get(-1)
         }
     }
 
     "create" {
-        val request = SavePost("title 4", "blabla 04", 1234)
+        val request = SaveArticle("title 4", "blabla 04", 1234)
         rxtx.executeAndAwait { tx ->
             tx.setRollbackOnly()
-            postService.create(request).let {
+            articleService.create(request).let {
                 it.title shouldBe request.title
                 it.body shouldBe request.body
                 it.authorId shouldBe request.authorId
@@ -68,18 +68,18 @@ class PostServiceTest(
     }
 
     "create fail and rollback" {
-        val prevSize = getPostSize()
+        val prevSize = getArticleSize()
         shouldThrow<Exception> {
-            postService.create(SavePost("error", "blabla 04", 1234))
+            articleService.create(SaveArticle("error", "blabla 04", 1234))
         }
-        getPostSize() shouldBe prevSize
+        getArticleSize() shouldBe prevSize
     }
 
     "update" {
         val newAuthorId = 999_999L
         rxtx.executeAndAwait { tx ->
             tx.setRollbackOnly()
-            postService.update(1, SavePost(authorId=newAuthorId)).let {
+            articleService.update(1, SaveArticle(authorId=newAuthorId)).let {
                 it.authorId = newAuthorId
             }
         }
@@ -89,11 +89,11 @@ class PostServiceTest(
     "delete" {
         rxtx.executeAndAwait { tx ->
             tx.setRollbackOnly()
-            val prevSize = getPostSize()
-            val created = postService.create(SavePost("title 4", "blabla 04", 1234))
-            getPostSize() shouldBe prevSize + 1
-            postService.delete(created.id)
-            getPostSize() shouldBe prevSize
+            val prevSize = getArticleSize()
+            val created = articleService.create(SaveArticle("title 4", "blabla 04", 1234))
+            getArticleSize() shouldBe prevSize + 1
+            articleService.delete(created.id)
+            getArticleSize() shouldBe prevSize
         }
     }
 

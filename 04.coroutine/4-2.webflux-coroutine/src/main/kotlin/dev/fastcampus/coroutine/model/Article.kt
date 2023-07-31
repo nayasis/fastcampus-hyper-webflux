@@ -7,8 +7,8 @@ import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 import javax.annotation.processing.Generated
 
-@Table("TB_POST")
-class Post {
+@Table("TB_ARTICLE")
+class Article {
 
     @Id
     @Generated
@@ -20,5 +20,13 @@ class Post {
     var createdAt: LocalDateTime? = null
     @LastModifiedDate
     var updatedAt: LocalDateTime? = null
+
+    constructor()
+    constructor(id: Long, title: String, body: String, authorId: Long) {
+        this.id = id
+        this.title = title
+        this.body = body
+        this.authorId = authorId
+    }
 
 }

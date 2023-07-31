@@ -1,7 +1,7 @@
 package dev.fastcampus.coroutine.controller
 
-import dev.fastcampus.coroutine.service.ResPost
-import dev.fastcampus.coroutine.service.SavePost
+import dev.fastcampus.coroutine.service.ResArticle
+import dev.fastcampus.coroutine.service.SaveArticle
 import io.kotest.core.spec.style.StringSpec
 import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +17,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 
 @SpringBootTest
 @ActiveProfiles("test")
-class PostControllerTest(
+class ArticleControllerTest(
     @Autowired private val context: ApplicationContext,
     @Autowired private val client: DatabaseClient,
 ): StringSpec({
@@ -32,35 +32,35 @@ class PostControllerTest(
 
     val client = WebTestClient.bindToApplicationContext(context).build()
 
-    fun getPostSize(): Int {
-        val ref = object: ParameterizedTypeReference<ArrayList<ResPost>>(){}
-        return client.get().uri("/post/all").accept(APPLICATION_JSON).exchange().expectBody(ref).returnResult().responseBody?.size ?: 0
+    fun getArticleSize(): Int {
+        val ref = object: ParameterizedTypeReference<ArrayList<ResArticle>>(){}
+        return client.get().uri("/article/all").accept(APPLICATION_JSON).exchange().expectBody(ref).returnResult().responseBody?.size ?: 0
     }
 
     "get all" {
-        client.get().uri("/post/all").accept(APPLICATION_JSON).exchange()
+        client.get().uri("/article/all").accept(APPLICATION_JSON).exchange()
             .expectStatus().isOk
             .expectBody()
             .jsonPath("$.length()").isEqualTo(3)
-        client.get().uri("/post/all?title=2").accept(APPLICATION_JSON).exchange()
+        client.get().uri("/article/all?title=2").accept(APPLICATION_JSON).exchange()
             .expectStatus().isOk
             .expectBody()
             .jsonPath("$.length()").isEqualTo(1)
     }
 
     "get" {
-        client.get().uri("/post/1").accept(APPLICATION_JSON).exchange()
+        client.get().uri("/article/1").accept(APPLICATION_JSON).exchange()
             .expectStatus().isOk.expectBody()
             .jsonPath("title").isEqualTo("title 1")
             .jsonPath("body").isEqualTo("blabla 01")
             .jsonPath("authorId").isEqualTo("1234")
-        client.get().uri("/post/-1").accept(APPLICATION_JSON).exchange()
+        client.get().uri("/article/-1").accept(APPLICATION_JSON).exchange()
             .expectStatus().is4xxClientError
     }
 
     "create" {
-        val request = SavePost("test", "it is r2dbc demo", 1234)
-        client.post().uri("/post").accept(APPLICATION_JSON).bodyValue(request).exchange()
+        val request = SaveArticle("test", "it is r2dbc demo", 1234)
+        client.post().uri("/article").accept(APPLICATION_JSON).bodyValue(request).exchange()
             .expectStatus().isCreated
             .expectBody()
             .jsonPath("title").isEqualTo(request.title!!)
@@ -69,21 +69,21 @@ class PostControllerTest(
     }
 
     "update" {
-        val request = SavePost(authorId = 999999)
-        client.put().uri("/post/1").accept(APPLICATION_JSON).bodyValue(request).exchange()
+        val request = SaveArticle(authorId = 999999)
+        client.put().uri("/article/1").accept(APPLICATION_JSON).bodyValue(request).exchange()
             .expectStatus().isOk
             .expectBody()
             .jsonPath("authorId").isEqualTo(request.authorId!!)
     }
 
     "delete" {
-        val prevSize = getPostSize()
-        val res = client.post().uri("/post").accept(APPLICATION_JSON)
-            .bodyValue(SavePost("test", "it is r2dbc demo", 1234)).exchange()
-            .expectBody(ResPost::class.java).returnResult().responseBody!!
-        assertEquals(prevSize + 1, getPostSize())
-        client.delete().uri("/post/${res.id}").exchange().expectStatus().isOk
-        assertEquals(prevSize, getPostSize())
+        val prevSize = getArticleSize()
+        val res = client.post().uri("/article").accept(APPLICATION_JSON)
+            .bodyValue(SaveArticle("test", "it is r2dbc demo", 1234)).exchange()
+            .expectBody(ResArticle::class.java).returnResult().responseBody!!
+        assertEquals(prevSize + 1, getArticleSize())
+        client.delete().uri("/article/${res.id}").exchange().expectStatus().isOk
+        assertEquals(prevSize, getArticleSize())
     }
 
 })
