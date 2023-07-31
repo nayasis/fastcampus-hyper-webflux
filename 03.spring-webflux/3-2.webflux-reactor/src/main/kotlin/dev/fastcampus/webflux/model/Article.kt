@@ -6,8 +6,8 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 
-@Table("TB_POST")
-class Post {
+@Table("TB_ARTICLE")
+class Article {
     @Id
     var id: Long = 0
     var title: String? = null

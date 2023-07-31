@@ -1,7 +1,7 @@
 package dev.fastcampus.webflux.controller
 
-import dev.fastcampus.webflux.service.ResPost
-import dev.fastcampus.webflux.service.SavePost
+import dev.fastcampus.webflux.service.ResArticle
+import dev.fastcampus.webflux.service.SaveArticle
 import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer
@@ -23,7 +23,7 @@ private val logger = KotlinLogging.logger {}
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @DirtiesContext
-class PostControllerTest(
+class ArticleControllerTest(
     @Autowired private val context: ApplicationContext,
 ) {
 
@@ -32,7 +32,7 @@ class PostControllerTest(
     @Test
     @Order(1)
     fun getAll() {
-        client.get().uri("/post/all").accept(APPLICATION_JSON).exchange()
+        client.get().uri("/article/all").accept(APPLICATION_JSON).exchange()
             .expectStatus().isOk
             .expectBody()
 //            .also {
@@ -42,7 +42,7 @@ class PostControllerTest(
 //            .jsonPath("$.length()").value<Int> { logger.debug { it }  }
             .jsonPath("$.length()").isEqualTo(3)
 
-        client.get().uri("/post/all?title=2").accept(APPLICATION_JSON).exchange()
+        client.get().uri("/article/all?title=2").accept(APPLICATION_JSON).exchange()
             .expectStatus().isOk.expectBody()
             .jsonPath("$.length()").isEqualTo(1)
     }
@@ -50,20 +50,20 @@ class PostControllerTest(
     @Test
     @Order(2)
     fun get() {
-        client.get().uri("/post/1").accept(APPLICATION_JSON).exchange()
+        client.get().uri("/article/1").accept(APPLICATION_JSON).exchange()
             .expectStatus().isOk.expectBody()
             .jsonPath("title").isEqualTo("title 1")
             .jsonPath("body").isEqualTo("blabla 01")
             .jsonPath("authorId").isEqualTo("1234")
-        client.get().uri("/post/-1").accept(APPLICATION_JSON).exchange()
+        client.get().uri("/article/-1").accept(APPLICATION_JSON).exchange()
             .expectStatus().is4xxClientError
     }
 
     @Test
     @Order(3)
     fun create() {
-        val request = SavePost("test", "it is r2dbc demo", 1234)
-        client.post().uri("/post").accept(APPLICATION_JSON).bodyValue(request).exchange()
+        val request = SaveArticle("test", "it is r2dbc demo", 1234)
+        client.post().uri("/article").accept(APPLICATION_JSON).bodyValue(request).exchange()
             .expectStatus().isCreated
             .expectBody()
             .jsonPath("title").isEqualTo(request.title!!)
@@ -74,8 +74,8 @@ class PostControllerTest(
     @Test
     @Order(4)
     fun update() {
-        val request = SavePost(authorId = 999999)
-        client.put().uri("/post/1").accept(APPLICATION_JSON).bodyValue(request).exchange()
+        val request = SaveArticle(authorId = 999999)
+        client.put().uri("/article/1").accept(APPLICATION_JSON).bodyValue(request).exchange()
             .expectStatus().isOk
             .expectBody()
             .jsonPath("authorId").isEqualTo(request.authorId!!)
@@ -84,21 +84,21 @@ class PostControllerTest(
     @Test
     @Order(5)
     fun delete() {
-        val prevSize = getPostSize()
+        val prevSize = getArticleSize()
 
-        val request = SavePost("test", "it is r2dbc demo", 1234)
-        val res = client.post().uri("/post").accept(APPLICATION_JSON).bodyValue(request).exchange().expectBody(ResPost::class.java).returnResult().responseBody!!
+        val request = SaveArticle("test", "it is r2dbc demo", 1234)
+        val res = client.post().uri("/article").accept(APPLICATION_JSON).bodyValue(request).exchange().expectBody(ResArticle::class.java).returnResult().responseBody!!
 
-        assertEquals(prevSize + 1, getPostSize())
+        assertEquals(prevSize + 1, getArticleSize())
 
-        client.delete().uri("/post/${res.id}").exchange().expectStatus().isOk
+        client.delete().uri("/article/${res.id}").exchange().expectStatus().isOk
 
-        assertEquals(prevSize, getPostSize())
+        assertEquals(prevSize, getArticleSize())
 
     }
 
-    private fun getPostSize(): Int {
-        val ref = object: ParameterizedTypeReference<ArrayList<ResPost>>(){}
-        return client.get().uri("/post/all").accept(APPLICATION_JSON).exchange().expectBody(ref).returnResult().responseBody?.size ?: 0
+    private fun getArticleSize(): Int {
+        val ref = object: ParameterizedTypeReference<ArrayList<ResArticle>>(){}
+        return client.get().uri("/article/all").accept(APPLICATION_JSON).exchange().expectBody(ref).returnResult().responseBody?.size ?: 0
     }
 }
