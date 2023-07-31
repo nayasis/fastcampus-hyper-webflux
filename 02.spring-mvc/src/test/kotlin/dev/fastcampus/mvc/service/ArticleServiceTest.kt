@@ -14,32 +14,32 @@ private val logger = KotlinLogging.logger {}
 @SpringBootTest
 @Transactional
 @Sql("classpath:db-init/test.sql")
-class PostServiceTest(
-    @Autowired private val postService: PostService
+class ArticleServiceTest(
+    @Autowired private val articleService: ArticleService
 ) {
 
     @Test
     fun getAll() {
-        assertEquals(3, postService.getAll().size)
-        assertEquals(1, postService.getAll("2").size)
+        assertEquals(3, articleService.getAll().size)
+        assertEquals(1, articleService.getAll("2").size)
     }
 
     @Test
     fun get() {
-        postService.get(1).let {
+        articleService.get(1).let {
             assertEquals("title 1", it.title)
             assertEquals("blabla 01", it.body)
             assertEquals(1234, it.authorId)
         }
         assertThrows<Throwable> {
-            postService.get(-1)
+            articleService.get(-1)
         }
     }
 
     @Test
     fun create() {
-        val request = SavePost("title 4", "blabla 04", 1234)
-        postService.create(request).let {
+        val request = SaveArticle("title 4", "blabla 04", 1234)
+        articleService.create(request).let {
             assertEquals(request.title, it.title)
             assertEquals(request.body, it.body)
             assertEquals(request.authorId, it.authorId)
@@ -49,18 +49,18 @@ class PostServiceTest(
     @Test
     fun update() {
         val newAuthorId = 999_999L
-        postService.update(1, SavePost(authorId = newAuthorId)).let {
+        articleService.update(1, SaveArticle(authorId = newAuthorId)).let {
             assertEquals(newAuthorId, it.authorId)
         }
     }
 
     @Test
     fun delete() {
-        val prevSize = postService.getAll().size
-        val new = postService.create(SavePost("title 4", "blabla 04", 1234))
-        assertEquals(prevSize + 1, postService.getAll().size)
-        postService.delete(new.id)
-        assertEquals(prevSize, postService.getAll().size)
+        val prevSize = articleService.getAll().size
+        val new = articleService.create(SaveArticle("title 4", "blabla 04", 1234))
+        assertEquals(prevSize + 1, articleService.getAll().size)
+        articleService.delete(new.id)
+        assertEquals(prevSize, articleService.getAll().size)
     }
 
 }

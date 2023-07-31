@@ -6,25 +6,35 @@ import jakarta.persistence.EntityListeners
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType.*
 import jakarta.persistence.Id
-import jakarta.persistence.Table
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
-@Entity(name = "TB_POST")
+@Entity(name = "TB_ARTICLE")
 @EntityListeners(AuditingEntityListener::class)
-class Post {
+class Article {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name="id")
     var id: Long = 0
+
+    @Column(name="title")
     var title: String? = null
+
+    @Column(name="body")
     var body: String? = null
+
+    @Column(name="author_id")
     var authorId: Long? = null
+
     @CreatedDate
+    @Column(name="created_at")
     var createdAt: LocalDateTime? = null
+
     @LastModifiedDate
+    @Column(name="updated_at")
     var updatedAt: LocalDateTime? = null
 
 }

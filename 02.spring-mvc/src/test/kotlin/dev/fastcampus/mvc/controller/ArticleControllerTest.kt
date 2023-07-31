@@ -1,6 +1,6 @@
 package dev.fastcampus.mvc.controller
 
-import dev.fastcampus.mvc.service.PostService
+import dev.fastcampus.mvc.service.ArticleService
 import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -23,20 +23,20 @@ private val logger = KotlinLogging.logger {}
 @AutoConfigureMockMvc
 @Transactional
 @Sql("classpath:db-init/test.sql")
-class PostControllerTest(
+class ArticleControllerTest(
     @Autowired private val mockMvc: MockMvc,
-    @Autowired private val postService: PostService,
+    @Autowired private val articleService: ArticleService,
 ) {
 
     @Test
     fun getAll() {
-        mockMvc.get("/post/all") {
+        mockMvc.get("/article/all") {
             contentType = APPLICATION_JSON
         }.andExpect {
             status { isOk() }
             jsonPath("$.length()") { value(3) }
         }
-        mockMvc.get("/post/all?title=title 2") {
+        mockMvc.get("/article/all?title=title 2") {
             contentType = APPLICATION_JSON
         }.andExpect {
             status { isOk() }
@@ -46,7 +46,7 @@ class PostControllerTest(
 
     @Test
     fun get() {
-        mockMvc.get("/post/1") {
+        mockMvc.get("/article/1") {
             contentType = APPLICATION_JSON
         }.andExpect {
             status { isOk() }
@@ -60,7 +60,7 @@ class PostControllerTest(
         // MockMvc는 containerless 테스트라서 error 처리로직을 타지 않는다.
         // https://github.com/spring-projects/spring-boot/issues/7321
         assertThrows<Exception> {
-            mockMvc.get("/post/999") {
+            mockMvc.get("/article/999") {
                 contentType = APPLICATION_JSON
             }
         }
@@ -68,7 +68,7 @@ class PostControllerTest(
 
     @Test
     fun create() {
-        mockMvc.post("/post") {
+        mockMvc.post("/article") {
             contentType = APPLICATION_JSON
             content = """
                 {"title": "title 4", "body": "blabla 04", "authorId": 5678}
@@ -84,7 +84,7 @@ class PostControllerTest(
 
     @Test
     fun update() {
-        mockMvc.put("/post/1") {
+        mockMvc.put("/article/1") {
             contentType = APPLICATION_JSON
             content = """
                 {"authorId": 999999}
@@ -97,19 +97,19 @@ class PostControllerTest(
 
     @Test
     fun delete() {
-        val prevSize = postService.getAll().size
-        mockMvc.post("/post") {
+        val prevSize = articleService.getAll().size
+        mockMvc.post("/article") {
             contentType = APPLICATION_JSON
             content = """{"title": "title 4", "body": "blabla 04", "authorId": 5678}"""
         }.andExpect {
             status { isOk() }
         }
-        assertEquals(prevSize + 1, postService.getAll().size)
-        mockMvc.delete("/post/1") {
+        assertEquals(prevSize + 1, articleService.getAll().size)
+        mockMvc.delete("/article/1") {
             contentType = APPLICATION_JSON
         }.andExpect {
             status { isOk() }
         }
-        assertEquals(prevSize, postService.getAll().size)
+        assertEquals(prevSize, articleService.getAll().size)
     }
 }
