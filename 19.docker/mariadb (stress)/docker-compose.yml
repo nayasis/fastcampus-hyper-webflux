@@ -1,8 +1,8 @@
 version: "3.2"
 services:
-  db:
+  db-stress:
     image: mariadb:latest
-    container_name: mariadb
+    container_name: mariadb-stress
     restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     ports:
