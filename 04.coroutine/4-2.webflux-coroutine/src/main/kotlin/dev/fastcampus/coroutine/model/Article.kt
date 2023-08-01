@@ -22,11 +22,9 @@ class Article {
     var updatedAt: LocalDateTime? = null
 
     constructor()
-    constructor(id: Long, title: String, body: String, authorId: Long) {
-        this.id = id
+    constructor(title: String, body: String, authorId: Long) {
         this.title = title
         this.body = body
         this.authorId = authorId
     }
-
 }
