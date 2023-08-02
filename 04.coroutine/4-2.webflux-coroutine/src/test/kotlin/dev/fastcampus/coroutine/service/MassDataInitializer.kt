@@ -17,73 +17,15 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-//@SpringBootTest
-//class MassDataInitializer(
-//    @Autowired private val repository: ArticleRepository,
-//    @Autowired private val connectionFactory: ConnectionFactory,
-//): StringSpec({
-//
-//    "mass initialize".config(enabled = true) {
-//
-//        repository.deleteAll()
-//
-//        val connection = connectionFactory.create().awaitSingle()
-//        var batch = connection.createBatch()
-//
-//        repeat(199_999_999) { i ->
-////        repeat(10000) { i ->
-//            batch.add("""
-//                INSERT INTO TB_ARTICLE(
-//                    title, body, author_id, created_at, updated_at
-//                ) VALUES (
-//                    'title $i',
-//                    'body $i',
-//                    $i,
-//                    current_timestamp(),
-//                    current_timestamp()
-//                )
-//            """.trimIndent())
-//            if( i % 10000 == 0 ) {
-//                println("$i")
-////                executer.execute()
-//                Flux.from(batch.execute()).subscribeOn(Schedulers.boundedElastic()).blockLast()
-//                batch = connection.createBatch()
-//
-////                Flux.from(executer.execute()).subscribeOn(Schedulers.boundedElastic()).last().awaitSingle()
-////                batch.execute().toMono().subscribeOn(Schedulers.boundedElastic()).awaitSingle()
-//            }
-//        }
-//
-//        batch.add("""
-//                INSERT INTO TB_ARTICLE(
-//                    title, body, author_id, created_at, updated_at
-//                ) VALUES (
-//                    'search',
-//                    'body',
-//                    0,
-//                    current_timestamp(),
-//                    current_timestamp()
-//                )
-//            """.trimIndent())
-//
-////        Flux.from(executer.execute()).subscribeOn(Schedulers.boundedElastic()).blockLast()
-//        Flux.from(batch.execute()).subscribeOn(Schedulers.boundedElastic()).last().awaitSingle()
-////        batch.execute().toMono().subscribeOn(Schedulers.boundedElastic()).awaitSingle()
-//
-//        connection.close()
-//
-//    }
-//
-//})
-
 class MassDataInitializer: StringSpec({
 
-    "mass insert".config(enabled = true) {
+    "mass insert".config(enabled = false) {
         connectDb()
         transaction {
             Articles.deleteAll()
             val buffer = ArrayList<Article>()
-            repeat(9_999_999) { i ->
+//            repeat(9_999_999) { i ->
+            repeat(100_000) { i ->
                 buffer.add(Article("title $i", "body $i", i.toLong() ))
                 if( i % 20000 == 0) {
                     println(">> $i")
@@ -103,7 +45,7 @@ class MassDataInitializer: StringSpec({
             }
 
             buffer.add(
-                Article("search", "match", 0.toLong() )
+                Article("title matched", "contents matched", 0.toLong() )
             )
             Articles.batchInsert(
                 buffer,
@@ -127,17 +69,17 @@ class MassDataInitializer: StringSpec({
 
             ArticleDao
                 .find {
-                    (Articles.title like "% 2002%").and(
+                    (Articles.title like "% 10%").and(
                         Articles.body like "%45"
                     )
                 }.forEach { println(it) }
 
             val rs = Articles.selectAll().apply {
-                andWhere { Articles.title like "% 2002%" }
+                andWhere { Articles.title like "% 10%" }
                 andWhere { Articles.body like "%45" }
-            }.forEach { println(it) }
-//            println("count : ${rs.count()}")
-//            println(rs.joinToString("\n"))
+            }
+            println("count : ${rs.count()}")
+            println(rs.joinToString("\n"))
         }
     }
 })
@@ -170,5 +112,4 @@ class ArticleDao(id: EntityID<Long>): LongEntity(id) {
     override fun toString(): String {
         return "ArticleDao(title='$title', body='$body', authorId=$authorId, createdAt=$createdAt, updatedAt=$updatedAt)"
     }
-
 }
