@@ -1,0 +1,45 @@
+spring:
+  profiles:
+    active: local
+---
+spring:
+  application:
+    name: spring-webflux
+  output:
+    ansi:
+      enabled: always
+  r2dbc:
+    url: r2dbc:pool:h2:mem://localhost/test
+  sql:
+    init:
+      mode: embedded
+      schema-locations: classpath:db-init/schema.sql
+      data-locations: classpath:db-init/data.sql
+server:
+  error:
+    include-exception: true
+    include-message: always
+    include-stacktrace: always
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+logging:
+  level:
+#    org.springframework.r2dbc.core: debug
+    dev.fastcampus: debug
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  sql:
+    init:
+      mode: embedded
+      data-locations: classpath:db-init/test.sql
+logging:
+  level:
+    org.springframework.r2dbc.core: debug
+    org.springframework.r2dbc.connection.init.ScriptUtils: debug
+    dev.fastcampus: debug

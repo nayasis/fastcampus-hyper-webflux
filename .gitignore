@@ -1,0 +1,11 @@
+03.spring-webflux/.gradle
+99.ppt/~$*.pptx
+.idea
+*/.gradle
+*/build/
+*/gradle/
+19.docker/mariadb (stress)/data/
+19.docker/mariadb (stress)/data.7z
+19.docker/mariadb/data/
+06.testing/locust/__pycache__/stress.cpython-311.pyc
+06.testing/locust/__pycache__/locustfile.cpython-311.pyc
