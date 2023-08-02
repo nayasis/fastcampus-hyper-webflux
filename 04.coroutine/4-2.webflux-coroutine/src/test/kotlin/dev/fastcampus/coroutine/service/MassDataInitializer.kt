@@ -24,8 +24,8 @@ class MassDataInitializer: StringSpec({
         transaction {
             Articles.deleteAll()
             val buffer = ArrayList<Article>()
-//            repeat(9_999_999) { i ->
-            repeat(100_000) { i ->
+            repeat(1_999_999) { i ->
+//            repeat(100_000) { i ->
                 buffer.add(Article("title $i", "body $i", i.toLong() ))
                 if( i % 20000 == 0) {
                     println(">> $i")
