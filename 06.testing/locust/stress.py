@@ -1,22 +1,21 @@
 from locust import HttpUser, task, between, TaskSet
-
+from locust import events
+from locust.runners import MasterRunner, WorkerRunner
 
 class UserBehavior(TaskSet):
     # @task
     # def getPost(self):
-    #     postId = 1
-    #     self.client.get(f'/post/{postId}')
+    #     self.client.get(f'/article/1')
     # @task
     # def getAllPost(self):
-    #     userId = 1
-    #     self.client.get(f'/post/all?title=st')
+    #     self.client.get(f'/article/all?title=matched')
     @task
     def delay(self):
-        userId = 1
         self.client.get(f'/stress/delay')
 
 
 class LocustUser(HttpUser):
-    host  = "http://localhost:8080"
+    host = "http://localhost:8080"
     tasks = [ UserBehavior ]
-    # wait_time = between(1, 3)
+    min_wait = 5000
+    max_wait = 15000
