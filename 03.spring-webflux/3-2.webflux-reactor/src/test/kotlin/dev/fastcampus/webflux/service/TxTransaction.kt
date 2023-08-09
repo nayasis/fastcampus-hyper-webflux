@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono
 
 // Spring test 의 @Transactional 은 threadlocal 기반이라 webflux 에서 작동하지 않는다.
 // https://github.com/spring-projects/spring-framework/issues/24226
-
 @Component
 class TxTransaction: ApplicationContextAware {
 
@@ -23,8 +22,6 @@ class TxTransaction: ApplicationContextAware {
         lateinit var rxtx: TransactionalOperator
             private set
     }
-
-
 
 }
 
@@ -42,8 +39,4 @@ fun <T> Flux<T>.rollback(): Flux<T> {
         tx.setRollbackOnly()
         publisher
     }
-}
-
-fun String.merong() {
-
 }
