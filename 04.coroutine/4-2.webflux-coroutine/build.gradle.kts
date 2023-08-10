@@ -46,6 +46,9 @@ dependencies {
 	testImplementation("org.jetbrains.exposed:exposed:0.17.14")
 	testImplementation("org.mariadb.jdbc:mariadb-java-client:3.1.4")
 
+	testRuntimeOnly("com.h2database:h2")
+	testRuntimeOnly("io.r2dbc:r2dbc-h2")
+
 }
 
 tasks.withType<KotlinCompile> {

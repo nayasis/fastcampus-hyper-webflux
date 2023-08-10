@@ -1,4 +1,7 @@
-DROP TABLE TB_ARTICLE;
+DROP TABLE IF EXISTS TB_ARTICLE;
+
+-- H2 test db 가 아닌 mariadb 를 연결하고 있을 경우에는 drop table 할 경우 flush table 도 해주어야 함 (by root)
+-- FLUSH TABLES TB_ARTICLE;
 
 CREATE TABLE TB_ARTICLE (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,

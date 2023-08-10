@@ -31,6 +31,8 @@ spring:
   config:
     activate:
       on-profile: test
+  r2dbc:
+    url: r2dbc:pool:h2:mem://localhost/sample
   sql:
     init:
       mode: never
