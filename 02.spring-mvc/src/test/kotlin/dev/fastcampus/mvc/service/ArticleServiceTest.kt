@@ -16,7 +16,6 @@ private val logger = KotlinLogging.logger {}
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-@Rollback
 @Sql("classpath:db-init/test.sql")
 class ArticleServiceTest(
     @Autowired private val articleService: ArticleService
