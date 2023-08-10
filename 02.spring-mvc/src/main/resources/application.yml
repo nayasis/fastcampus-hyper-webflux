@@ -32,9 +32,8 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   sql:
     init:
-      mode: never
-#      mode: embedded
-#      schema-locations: classpath:db-init/schema.sql
+      mode: embedded
+      schema-locations: classpath:db-init/schema.sql
 #      data-locations: classpath:db-init/data.sql
 server:
   error:
@@ -63,15 +62,3 @@ spring:
   sql:
     init:
       mode: never
----
-spring:
-  config:
-    activate:
-      on-profile: test
-  jpa:
-    hibernate:
-      ddl-auto: none
-  sql:
-    init:
-      mode: never
-#      schema-locations: classpath:db-init/test.sql
