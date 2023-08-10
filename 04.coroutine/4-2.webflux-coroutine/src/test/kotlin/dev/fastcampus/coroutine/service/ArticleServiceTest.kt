@@ -37,11 +37,19 @@ class ArticleServiceTest(
         }.block()
     }
 
+    afterSpec {
+        println(">> clean db")
+        val script = ClassPathResource("db-init/clean.sql")
+        client.inConnection { connection ->
+            ScriptUtils.executeSqlScript(connection, script )
+        }.block()
+    }
+
     suspend fun getArticleSize() = articleService.getAll().toList().size
 
     "get all" {
-        assertEquals(3, articleService.getAll().toList().size)
-        assertEquals(1, articleService.getAll("2").toList().size)
+        articleService.getAll().toList().size shouldBe 3
+        articleService.getAll("2").toList().size shouldBe 1
     }
 
     "get" {

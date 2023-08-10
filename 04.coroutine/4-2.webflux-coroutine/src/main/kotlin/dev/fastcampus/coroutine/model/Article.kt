@@ -8,21 +8,19 @@ import java.time.LocalDateTime
 import javax.annotation.processing.Generated
 
 @Table("TB_ARTICLE")
-class Article {
-
+class Article(
     @Id
     @Generated
-    var id: Long = 0
-    var title: String? = null
-    var body: String? = null
-    var authorId: Long? = null
+    var id: Long = 0,
+    var title: String? = null,
+    var body: String? = null,
+    var authorId: Long? = null,
     @CreatedDate
-    var createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = null,
     @LastModifiedDate
-    var updatedAt: LocalDateTime? = null
-
-    constructor()
-    constructor(title: String, body: String, authorId: Long) {
+    var updatedAt: LocalDateTime? = null,
+) {
+    constructor(title: String, body: String, authorId: Long): this() {
         this.title = title
         this.body = body
         this.authorId = authorId

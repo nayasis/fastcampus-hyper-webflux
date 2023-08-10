@@ -3,6 +3,7 @@ package dev.fastcampus.coroutine.controller
 import dev.fastcampus.coroutine.service.ResArticle
 import dev.fastcampus.coroutine.service.SaveArticle
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -26,8 +27,8 @@ class ArticleControllerTest(
         println(">> initialize db")
         val script = ClassPathResource("db-init/test.sql")
         client.inConnection { connection ->
-            ScriptUtils.executeSqlScript(connection, script )
-        }.block()
+            ScriptUtils.executeSqlScript(connection, script)
+        }.subscribe()
     }
 
     val client = WebTestClient.bindToApplicationContext(context).build()
@@ -81,9 +82,9 @@ class ArticleControllerTest(
         val res = client.post().uri("/article").accept(APPLICATION_JSON)
             .bodyValue(SaveArticle("test", "it is r2dbc demo", 1234)).exchange()
             .expectBody(ResArticle::class.java).returnResult().responseBody!!
-        assertEquals(prevSize + 1, getArticleSize())
+        getArticleSize() shouldBe prevSize + 1
         client.delete().uri("/article/${res.id}").exchange().expectStatus().isOk
-        assertEquals(prevSize, getArticleSize())
+        getArticleSize() shouldBe prevSize
     }
 
 })
