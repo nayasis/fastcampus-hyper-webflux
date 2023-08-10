@@ -6,13 +6,17 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.Rollback
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.transaction.annotation.Transactional
 
 private val logger = KotlinLogging.logger {}
 
 @SpringBootTest
+@ActiveProfiles("test")
 @Transactional
+@Rollback
 @Sql("classpath:db-init/test.sql")
 class ArticleServiceTest(
     @Autowired private val articleService: ArticleService

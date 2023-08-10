@@ -13,28 +13,39 @@ import java.time.LocalDateTime
 
 @Entity(name = "TB_ARTICLE")
 @EntityListeners(AuditingEntityListener::class)
-class Article {
+class Article(
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name="id")
-    var id: Long = 0
+    var id: Long = 0,
 
     @Column(name="title")
-    var title: String? = null
+    var title: String? = null,
 
     @Column(name="body")
-    var body: String? = null
+    var body: String? = null,
 
     @Column(name="author_id")
-    var authorId: Long? = null
+    var authorId: Long? = null,
 
     @CreatedDate
     @Column(name="created_at")
-    var createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = null,
 
     @LastModifiedDate
     @Column(name="updated_at")
-    var updatedAt: LocalDateTime? = null
+    var updatedAt: LocalDateTime? = null,
 
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Article
+        return id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
 }
