@@ -15,6 +15,21 @@ group = "dev.study.mvc"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
+//allOpen {
+//	annotation("javax.persistence.Entity")
+//	annotation("javax.persistence.MappedSuperclass")
+//	annotation("javax.persistence.Embeddable")
+//}
+//
+//noArg {
+//	annotation("javax.persistence.Entity")
+//	annotation("javax.persistence.MappedSuperclass")
+//	annotation("javax.persistence.Embeddable")
+//	annotation("com.github.nayasis.kotlin.basica.annotation.NoArg")
+//	invokeInitializers = true
+//}
+
+
 repositories {
 	mavenCentral()
 	gradlePluginPortal()
