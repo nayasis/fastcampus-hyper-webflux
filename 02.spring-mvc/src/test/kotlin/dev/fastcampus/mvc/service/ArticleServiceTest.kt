@@ -24,24 +24,24 @@ private val logger = KotlinLogging.logger {}
 
 @SpringBootTest
 @ActiveProfiles("test")
-//@Transactional
-//@Sql("classpath:db-init/test.sql")
+@Transactional
+@Sql("classpath:db-init/test.sql")
 @ExtendWith(MockitoExtension::class)
 class ArticleServiceTest(
-//    @Autowired private val articleService: ArticleService
-    @Mock private val articleService: ArticleService
+    @Autowired private val articleService: ArticleService,
+//    @Mock private val articleService: ArticleService,
 ) {
 
     @Test
     fun getAll() {
-        Mockito.`when`(articleService.getAll()).thenReturn(listOf(
-            Article(1,"title1","body1",1234, LocalDateTime.now(), LocalDateTime.now()),
-            Article(2,"title2","body2",1234, LocalDateTime.now(), LocalDateTime.now()),
-            Article(3,"title3","body3",1234, LocalDateTime.now(), LocalDateTime.now()),
-        ))
-        Mockito.`when`(articleService.getAll("2")).thenReturn(listOf(
-            Article(2,"title2","body2",1234, LocalDateTime.now(), LocalDateTime.now()),
-        ))
+//        Mockito.`when`(articleService.getAll()).thenReturn(listOf(
+//            Article(1,"title1","body1",1234),
+//            Article(2,"title2","body2",1234),
+//            Article(3,"title3","body3",1234),
+//        ))
+//        Mockito.`when`(articleService.getAll("2")).thenReturn(listOf(
+//            Article(2,"title2","body2",1234),
+//        ))
         assertEquals(3, articleService.getAll().size)
         assertEquals(1, articleService.getAll("2").size)
     }

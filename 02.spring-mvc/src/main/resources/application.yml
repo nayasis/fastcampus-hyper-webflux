@@ -10,16 +10,14 @@ spring:
       enabled: always
   datasource:
     url: jdbc:h2:mem:////sample
-#    url: jdbc:mariadb://localhost:3306/sample
     driver-class-name: org.h2.Driver
-#    driver-class-name: org.mariadb.jdbc.Driver
-    type: com.zaxxer.hikari.HikariDataSource
+#    type: com.zaxxer.hikari.HikariDataSource
     hikari:
       auto-commit: false
       transaction-isolation: TRANSACTION_READ_COMMITTED
-      username: user
-      password: 1234
-      connection-timeout: 300_000
+#      username: user
+#      password: 1234
+#      connection-timeout: 300_000
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
@@ -27,7 +25,6 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
-#      ddl-auto: none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   sql:
@@ -62,3 +59,17 @@ spring:
   sql:
     init:
       mode: never
+---
+spring:
+  config:
+    activate:
+      on-profile: stress
+  datasource:
+    url: jdbc:mariadb://localhost:3306/sample
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: user
+    password: 1234
+    hikari:
+      connection-timeout: 300_000
+  jpa:
+    database-platform: org.hibernate.dialect.MariaDB103Dialect

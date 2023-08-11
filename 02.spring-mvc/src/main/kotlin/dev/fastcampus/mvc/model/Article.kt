@@ -6,6 +6,7 @@ import jakarta.persistence.EntityListeners
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType.*
 import jakarta.persistence.Id
+import jakarta.persistence.MappedSuperclass
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -29,15 +30,8 @@ class Article(
     @Column(name="author_id")
     var authorId: Long? = null,
 
-    @CreatedDate
-    @Column(name="created_at")
-    var createdAt: LocalDateTime? = null,
+): BaseEntity() {
 
-    @LastModifiedDate
-    @Column(name="updated_at")
-    var updatedAt: LocalDateTime? = null,
-
-) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -45,7 +39,21 @@ class Article(
         return id == other.id
     }
 
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String =
+        "Article(id=$id, title=$title, body=$body, authorId=$authorId, ${super.toString()})"
+
+}
+
+@MappedSuperclass
+open class BaseEntity (
+    @CreatedDate
+    @Column(name="created_at")
+    var createdAt: LocalDateTime? = null,
+    @LastModifiedDate
+    @Column(name="updated_at")
+    var updatedAt: LocalDateTime? = null,
+) {
+    override fun toString(): String = "createdAt=$createdAt, updatedAt=$updatedAt"
 }
