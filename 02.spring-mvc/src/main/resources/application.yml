@@ -11,18 +11,16 @@ spring:
   datasource:
     url: jdbc:h2:mem:////sample
     driver-class-name: org.h2.Driver
-#    type: com.zaxxer.hikari.HikariDataSource
     hikari:
       auto-commit: false
       transaction-isolation: TRANSACTION_READ_COMMITTED
-#      username: user
-#      password: 1234
-#      connection-timeout: 300_000
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
         format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
     hibernate:
       ddl-auto: update
       naming:
@@ -41,24 +39,11 @@ server:
   tomcat:
     threads:
       max: 2000
----
-spring:
-  config:
-    activate:
-      on-profile: local
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
     dev.fastcampus: debug
----
-spring:
-  config:
-    activate:
-      on-profile: prod
-  sql:
-    init:
-      mode: never
 ---
 spring:
   config:
