@@ -5,14 +5,13 @@ import dev.fastcampus.coroutine.service.ArticleService
 import dev.fastcampus.coroutine.service.ReqCreate
 import dev.fastcampus.coroutine.service.ReqUpdate
 import kotlinx.coroutines.flow.Flow
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/article")
 class ArticleController(
-   @Autowired private val articleService: ArticleService,
+   private val articleService: ArticleService,
 ) {
 
     @GetMapping("/all")
@@ -29,7 +28,7 @@ class ArticleController(
         return articleService.get(articleId)
     }
 
-    @GetMapping("/cached/{articleId}")
+    @GetMapping("/{articleId}/cache")
     suspend fun getCached(@PathVariable articleId: Long): Article {
         return articleService.getCached(articleId)
     }

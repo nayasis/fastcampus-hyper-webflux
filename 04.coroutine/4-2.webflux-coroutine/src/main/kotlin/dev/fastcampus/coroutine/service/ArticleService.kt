@@ -6,18 +6,15 @@ import dev.fastcampus.coroutine.repository.ArticleRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
-import java.time.LocalDateTime
 
 @Service
 class ArticleService(
-    @Autowired private val repository: ArticleRepository,
-    @Autowired private val redisTemplate: ReactiveRedisTemplate<Any, Any>,
+    private val repository: ArticleRepository,
+    private val redisTemplate: ReactiveRedisTemplate<Any, Any>,
 ) {
 
     private val ops = redisTemplate.opsForValue()
