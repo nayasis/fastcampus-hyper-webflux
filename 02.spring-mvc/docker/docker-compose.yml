@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  mvc:
+    container_name: mvc
+    image: spring-mvc:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"

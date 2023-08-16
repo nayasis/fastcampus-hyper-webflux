@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  webflux-reactor:
+    container_name: webflux-reactor
+    image: webflux-reactor:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"

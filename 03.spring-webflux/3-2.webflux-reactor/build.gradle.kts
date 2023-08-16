@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
 
+	implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
 	implementation("io.github.microutils:kotlin-logging:3.0.5")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
@@ -27,6 +28,7 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("io.r2dbc:r2dbc-h2")
+	runtimeOnly("org.mariadb:r2dbc-mariadb")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 }

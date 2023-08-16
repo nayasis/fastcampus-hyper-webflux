@@ -1,7 +1,7 @@
 package dev.fastcampus.webflux.controller
 
 import dev.fastcampus.webflux.service.ResArticle
-import dev.fastcampus.webflux.service.SaveArticle
+import dev.fastcampus.webflux.service.ReqCreate
 import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer
@@ -62,7 +62,7 @@ class ArticleControllerTest(
     @Test
     @Order(3)
     fun create() {
-        val request = SaveArticle("test", "it is r2dbc demo", 1234)
+        val request = ReqCreate("test", "it is r2dbc demo", 1234)
         client.post().uri("/article").accept(APPLICATION_JSON).bodyValue(request).exchange()
             .expectStatus().isCreated
             .expectBody()
@@ -74,7 +74,7 @@ class ArticleControllerTest(
     @Test
     @Order(4)
     fun update() {
-        val request = SaveArticle(authorId = 999999)
+        val request = ReqCreate(authorId = 999999)
         client.put().uri("/article/1").accept(APPLICATION_JSON).bodyValue(request).exchange()
             .expectStatus().isOk
             .expectBody()
@@ -86,7 +86,7 @@ class ArticleControllerTest(
     fun delete() {
         val prevSize = getArticleSize()
 
-        val request = SaveArticle("test", "it is r2dbc demo", 1234)
+        val request = ReqCreate("test", "it is r2dbc demo", 1234)
         val res = client.post().uri("/article").accept(APPLICATION_JSON).bodyValue(request).exchange().expectBody(ResArticle::class.java).returnResult().responseBody!!
 
         assertEquals(prevSize + 1, getArticleSize())

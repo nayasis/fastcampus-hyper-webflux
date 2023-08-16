@@ -1,24 +1,16 @@
 package dev.fastcampus.mvc.service
 
-import dev.fastcampus.mvc.model.Article
 import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Mockito.doReturn
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.Rollback
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 private val logger = KotlinLogging.logger {}
 
@@ -60,7 +52,7 @@ class ArticleServiceTest(
 
     @Test
     fun create() {
-        val request = SaveArticle("title 4", "blabla 04", 1234)
+        val request = ReqCreate("title 4", "blabla 04", 1234)
         articleService.create(request).let {
             assertEquals(request.title, it.title)
             assertEquals(request.body, it.body)
@@ -71,7 +63,7 @@ class ArticleServiceTest(
     @Test
     fun update() {
         val newAuthorId = 999_999L
-        articleService.update(1, SaveArticle(authorId = newAuthorId)).let {
+        articleService.update(1, ReqCreate(authorId = newAuthorId)).let {
             assertEquals(newAuthorId, it.authorId)
         }
     }
@@ -79,7 +71,7 @@ class ArticleServiceTest(
     @Test
     fun delete() {
         val prevSize = articleService.getAll().size
-        val new = articleService.create(SaveArticle("title 4", "blabla 04", 1234))
+        val new = articleService.create(ReqCreate("title 4", "blabla 04", 1234))
         assertEquals(prevSize + 1, articleService.getAll().size)
         articleService.delete(new.id)
         assertEquals(prevSize, articleService.getAll().size)

@@ -10,6 +10,7 @@ import jakarta.persistence.MappedSuperclass
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.io.Serializable
 import java.time.LocalDateTime
 
 @Entity(name = "TB_ARTICLE")
@@ -22,7 +23,7 @@ class Article(
     var id: Long = 0,
 
     @Column(name="title")
-    var title: String? = null,
+    var title: String = "",
 
     @Column(name="body")
     var body: String? = null,
@@ -30,7 +31,7 @@ class Article(
     @Column(name="author_id")
     var authorId: Long? = null,
 
-): BaseEntity() {
+): BaseEntity(), Serializable {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -54,6 +55,6 @@ open class BaseEntity (
     @LastModifiedDate
     @Column(name="updated_at")
     var updatedAt: LocalDateTime? = null,
-) {
+): Serializable {
     override fun toString(): String = "createdAt=$createdAt, updatedAt=$updatedAt"
 }

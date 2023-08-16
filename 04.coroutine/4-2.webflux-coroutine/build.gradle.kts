@@ -1,23 +1,16 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
-	id("org.springframework.boot") version "3.1.0"
-	id("io.spring.dependency-management") version "1.1.0"
-	kotlin("jvm") version "1.8.21"
-	kotlin("plugin.spring") version "1.8.21"
+	id("org.springframework.boot") version "3.1.2"
+	id("io.spring.dependency-management") version "1.1.2"
+	kotlin("jvm") version "1.8.22"
+	kotlin("plugin.spring") version "1.8.22"
 }
 
 group = "dev.fastcampus"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
-
-// 지연로딩을 사용할 일이 없어, 굳이 final 을 막지 않아도 됨
-//allOpen {
-//	annotation("javax.persistence.Entity")
-//	annotation("javax.persistence.MappedSuperclass")
-//	annotation("javax.persistence.Embeddable")
-//}
-
 
 repositories {
 	mavenCentral()
@@ -25,6 +18,7 @@ repositories {
 
 dependencies {
 
+	implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
 	implementation("io.github.microutils:kotlin-logging:3.0.5")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
 
@@ -35,7 +29,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 	runtimeOnly("org.mariadb:r2dbc-mariadb")
-	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+//	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 
@@ -60,4 +54,15 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.withType<BootBuildImage> {
+//	// set tls cert pipeline for company's security policy
+	docker {
+		tlsVerify.set(false)
+	}
+////	bindings.add("${project.projectDir}/ca-certficates/binding:/bindings/ca-certificates")
+//	environment.put("BPE_APPEND_JAVA_TOOL_OPTIONS", "\"-Xmx2048m -XX:MaxDirectMemorySize=512m")
+////	environment.put("BPE_APPEND_JAVA_TOOL_OPTIONS", "\"-Xmx4096m")
+////	environment.put("BPL_JVM_HEAD_ROOM", "5")
 }

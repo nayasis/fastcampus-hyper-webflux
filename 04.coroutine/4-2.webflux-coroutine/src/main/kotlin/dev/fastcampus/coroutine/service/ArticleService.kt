@@ -4,17 +4,25 @@ import dev.fastcampus.coroutine.exception.NotFoundException
 import dev.fastcampus.coroutine.model.Article
 import dev.fastcampus.coroutine.repository.ArticleRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Duration
 import java.time.LocalDateTime
 
 @Service
 class ArticleService(
     @Autowired private val repository: ArticleRepository,
+    @Autowired private val redisTemplate: ReactiveRedisTemplate<Any, Any>,
 ) {
 
-    fun getAll(): Flow<Article> {
+    private val ops = redisTemplate.opsForValue()
+
+    suspend fun getAll(): Flow<Article> {
         return repository.findAll()
     }
 
@@ -22,32 +30,35 @@ class ArticleService(
         return repository.findAllByTitleContains(title)
     }
 
-    suspend fun get(articleId: Long): ResArticle {
-        return repository.findById(articleId)?.let { ResArticle(it) } ?: throw NotFoundException("post id : $articleId")
+    suspend fun get(articleId: Long): Article {
+        return repository.findById(articleId) ?: throw NotFoundException("id: $articleId")
     }
 
-    @Transactional
-    suspend fun create(request: SaveArticle): ResArticle {
-        return repository.save(Article().apply {
-            title = request.title
-            body = request.body
-            authorId = request.authorId
-        }).let {
-            if(it.title == "error") {
-                throw RuntimeException("error")
-            }
-            ResArticle(it)
+    suspend fun getCached(id: Long): Article {
+        val key = "coroutine/article/${id}"
+        return (ops.get(key).awaitSingleOrNull() as? Article) ?: get(id).also {
+            ops.set(key,it).awaitSingle()
+            redisTemplate.expire(key, Duration.ofSeconds(120))
         }
     }
 
     @Transactional
-    suspend fun update(articleId: Long, request: SaveArticle): ResArticle {
+    suspend fun create(request: ReqCreate): Article {
+        return repository.save(Article(
+            title = request.title,
+            body = request.body,
+            authorId = request.authorId
+        ))
+    }
+
+    @Transactional
+    suspend fun update(articleId: Long, request: ReqUpdate): Article {
         return repository.findById(articleId)?.let { article ->
             request.title?.let { article.title = it }
             request.body?.let { article.body = it }
             request.authorId?.let { article.authorId = it }
-            repository.save(article).let { ResArticle(it) }
-        } ?: throw NotFoundException("No post(id:$articleId) found")
+            repository.save(article)
+        } ?: throw NotFoundException("id: $articleId")
     }
 
     @Transactional
@@ -57,26 +68,14 @@ class ArticleService(
 
 }
 
-data class SaveArticle(
-    var title: String? = null,
+data class ReqCreate(
+    var title: String,
     var body: String? = null,
     var authorId: Long? = null,
 )
 
-data class ResArticle(
-    var id: Long,
-    var title: String,
-    var body: String,
-    var authorId: Long,
-    var createdAt: LocalDateTime?,
-    var updatedAt: LocalDateTime?,
-) {
-    constructor(article: Article): this(
-        id = article.id,
-        title = article.title ?: "",
-        body = article.body ?: "",
-        authorId = article.authorId ?: 0,
-        createdAt = article.createdAt,
-        updatedAt = article.updatedAt,
-    )
-}
+data class ReqUpdate(
+    var title: String? = null,
+    var body: String? = null,
+    var authorId: Long? = null,
+)

@@ -1,16 +1,26 @@
 package dev.fastcampus.mvc.service
 
+import dev.fastcampus.mvc.exception.NoArticleFound
 import dev.fastcampus.mvc.model.Article
 import dev.fastcampus.mvc.repository.ArticleRepository
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.io.Serializable
+import java.time.Duration
 import java.time.LocalDateTime
 
 @Service
 class ArticleService(
-    private val repository: ArticleRepository
+    private val repository: ArticleRepository,
+    private val redisTemplate: RedisTemplate<Any,Any>,
+    @Value("\${spring.profiles.active}")
+    private val profile: String,
 ) {
+
+    private val ops = redisTemplate.opsForValue()
 
     fun getAll(): List<Article> {
         return repository.findAll()
@@ -20,28 +30,36 @@ class ArticleService(
         return repository.findAllByTitleContains(title)
     }
 
-    fun get(articleId: Long): ResArticle {
-        return repository.findByIdOrNull(articleId)?.let { ResArticle(it) }
-            ?: throw NoSuchElementException("article id : $articleId")
+    fun get(articleId: Long): Article {
+        return repository.findByIdOrNull(articleId)
+            ?: throw NoArticleFound("article id : $articleId")
+    }
+
+    fun getCached(id: Long): Article {
+        val key = "mvc/${profile}/article/${id}"
+        return ops.get(key)?.let { it as Article } ?: get(id).also {
+            ops.set(key, it)
+            redisTemplate.expire(key, Duration.ofSeconds(120))
+        }
     }
 
     @Transactional
-    fun create(request: SaveArticle): ResArticle {
+    fun create(request: ReqCreate): Article {
         return repository.save(Article().apply {
             title = request.title
             body = request.body
             authorId = request.authorId
-        }).let { ResArticle(it) }
+        })
     }
 
     @Transactional
-    fun update(articleId: Long, request: SaveArticle): ResArticle {
+    fun update(articleId: Long, request: ReqUpdate): Article {
         return repository.findByIdOrNull(articleId)?.let{ article ->
-            article.title = request.title
-            article.body = request.body
-            article.authorId = request.authorId
-            repository.save(article).let { ResArticle(it) }
-        } ?: throw NoSuchElementException("article id : $articleId")
+            request.title?.let { article.title = it }
+            request.body?.let { article.body = it }
+            request.authorId?.let { article.authorId = it }
+            repository.save(article)
+        } ?: throw NoArticleFound("article id : $articleId")
     }
 
     @Transactional
@@ -51,26 +69,14 @@ class ArticleService(
 
 }
 
-data class SaveArticle(
-    val title: String? = null,
+data class ReqCreate(
+    val title: String,
     val body: String? = null,
     val authorId: Long? = null,
 )
 
-data class ResArticle (
-    val id: Long,
-    val title: String?,
-    val body: String?,
-    val authorId: Long?,
-    val createdAt: LocalDateTime?,
-    val updatedAt: LocalDateTime?,
-) {
-    constructor(article: Article): this(
-        id = article.id,
-        title = article.title,
-        body = article.body,
-        authorId = article.authorId,
-        createdAt = article.createdAt,
-        updatedAt = article.updatedAt,
-    )
-}
+data class ReqUpdate(
+    val title: String? = null,
+    val body: String? = null,
+    val authorId: Long? = null,
+)

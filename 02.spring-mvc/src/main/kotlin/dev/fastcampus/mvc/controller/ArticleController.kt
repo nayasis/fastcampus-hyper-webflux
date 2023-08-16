@@ -2,8 +2,8 @@ package dev.fastcampus.mvc.controller
 
 import dev.fastcampus.mvc.model.Article
 import dev.fastcampus.mvc.service.ArticleService
-import dev.fastcampus.mvc.service.ResArticle
-import dev.fastcampus.mvc.service.SaveArticle
+import dev.fastcampus.mvc.service.ReqCreate
+import dev.fastcampus.mvc.service.ReqUpdate
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -30,17 +30,26 @@ class ArticleController(
     }
 
     @GetMapping("/{articleId}")
-    fun get(@PathVariable articleId: Long): ResArticle {
+    fun get(@PathVariable articleId: Long): Article {
         return articleService.get(articleId)
     }
 
+    @GetMapping("/cached/{articleId}")
+    fun getCached(@PathVariable articleId: Long): Article {
+        return articleService.getCached(articleId)
+    }
+
+    fun evicCache() {
+
+    }
+
     @PostMapping
-    fun create(@RequestBody request: SaveArticle): ResArticle {
+    fun create(@RequestBody request: ReqCreate): Article {
         return articleService.create(request)
     }
 
     @PutMapping("/{articleId}")
-    fun update(@PathVariable articleId: Long, @RequestBody request: SaveArticle): ResArticle {
+    fun update(@PathVariable articleId: Long, @RequestBody request: ReqUpdate): Article {
         return articleService.update(articleId, request)
     }
 

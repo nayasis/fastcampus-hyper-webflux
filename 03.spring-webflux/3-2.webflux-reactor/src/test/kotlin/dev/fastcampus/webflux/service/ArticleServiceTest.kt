@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.transaction.reactive.TransactionalOperator
 import reactor.core.publisher.Mono
 
 private val logger = KotlinLogging.logger{}
@@ -42,7 +41,7 @@ class ArticleServiceTest(
 
     @Test
     fun create() {
-        val request = SaveArticle("title 4", "blabla 04", 1234)
+        val request = ReqCreate("title 4", "blabla 04", 1234)
         articleService.create(request).doOnNext {
             assertEquals(request.title, it.title)
             assertEquals(request.body, it.body)
@@ -54,7 +53,7 @@ class ArticleServiceTest(
     @Disabled
     fun delete() {
         val prevSize = getArticleSize()
-        val new = articleService.create(SaveArticle("title 4", "blabla 04", 1234)).toFuture().get()
+        val new = articleService.create(ReqCreate("title 4", "blabla 04", 1234)).toFuture().get()
         assertEquals(prevSize + 1, getArticleSize())
         articleService.delete(new.id).toFuture().get()
         assertEquals(prevSize, getArticleSize())
@@ -65,7 +64,7 @@ class ArticleServiceTest(
     @Test
     fun deleteInRollback() {
         articleService.getAll().collectList().map { it.size }.flatMap { prevSize ->
-            articleService.create(SaveArticle("title 4", "blabla 04", 1234)).flatMap { new ->
+            articleService.create(ReqCreate("title 4", "blabla 04", 1234)).flatMap { new ->
                 articleService.getAll().collectList().map { it.size }.flatMap {
                     assertEquals(prevSize + 1, it)
                     articleService.delete(new.id).thenReturn(true).flatMap {
@@ -81,7 +80,7 @@ class ArticleServiceTest(
     @Test
     fun deleteInRollbackInFunctional() {
         articleService.getAll().collectList().map { it.size }.flatMap { prevSize ->
-            articleService.create(SaveArticle("title 4", "blabla 04", 1234))
+            articleService.create(ReqCreate("title 4", "blabla 04", 1234))
                 .zipWhen { articleService.getAll().collectList().map { it.size } }
                 .flatMap { Mono.zip(Mono.just(prevSize), Mono.just(it.t1), Mono.just(it.t2)) }
         }.flatMap {

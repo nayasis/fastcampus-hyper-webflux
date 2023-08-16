@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: stress
 ---
 spring:
   application:
@@ -50,7 +50,7 @@ spring:
     activate:
       on-profile: stress
   datasource:
-    url: jdbc:mariadb://localhost:3306/sample
+    url: jdbc:mariadb://10.202.96.73:3306/sample
     driver-class-name: org.mariadb.jdbc.Driver
     username: user
     password: 1234
@@ -58,3 +58,16 @@ spring:
       connection-timeout: 300_000
   jpa:
     database-platform: org.hibernate.dialect.MariaDB103Dialect
+  sql:
+    init:
+      mode: never
+  data:
+    redis:
+      host: 10.202.96.73
+      port: 6379
+logging:
+  level:
+    org.hibernate.SQL: off
+    org.hibernate.orm.jdbc.bind: off
+    dev.fastcampus: debug
+#    root: debug

@@ -1,10 +1,9 @@
 package dev.fastcampus.coroutine.controller
 
 import dev.fastcampus.coroutine.service.ResArticle
-import dev.fastcampus.coroutine.service.SaveArticle
+import dev.fastcampus.coroutine.service.ReqCreate
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
@@ -60,7 +59,7 @@ class ArticleControllerTest(
     }
 
     "create" {
-        val request = SaveArticle("test", "it is r2dbc demo", 1234)
+        val request = ReqCreate("test", "it is r2dbc demo", 1234)
         client.post().uri("/article").accept(APPLICATION_JSON).bodyValue(request).exchange()
             .expectStatus().isCreated
             .expectBody()
@@ -70,7 +69,7 @@ class ArticleControllerTest(
     }
 
     "update" {
-        val request = SaveArticle(authorId = 999999)
+        val request = ReqCreate(authorId = 999999)
         client.put().uri("/article/1").accept(APPLICATION_JSON).bodyValue(request).exchange()
             .expectStatus().isOk
             .expectBody()
@@ -80,7 +79,7 @@ class ArticleControllerTest(
     "delete" {
         val prevSize = getArticleSize()
         val res = client.post().uri("/article").accept(APPLICATION_JSON)
-            .bodyValue(SaveArticle("test", "it is r2dbc demo", 1234)).exchange()
+            .bodyValue(ReqCreate("test", "it is r2dbc demo", 1234)).exchange()
             .expectBody(ResArticle::class.java).returnResult().responseBody!!
         getArticleSize() shouldBe prevSize + 1
         client.delete().uri("/article/${res.id}").exchange().expectStatus().isOk

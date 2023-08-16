@@ -2,16 +2,17 @@ package dev.fastcampus.coroutine.controller
 
 import dev.fastcampus.coroutine.model.Article
 import dev.fastcampus.coroutine.service.ArticleService
-import dev.fastcampus.coroutine.service.ResArticle
-import dev.fastcampus.coroutine.service.SaveArticle
+import dev.fastcampus.coroutine.service.ReqCreate
+import dev.fastcampus.coroutine.service.ReqUpdate
 import kotlinx.coroutines.flow.Flow
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/article")
 class ArticleController(
-    private val articleService: ArticleService,
+   @Autowired private val articleService: ArticleService,
 ) {
 
     @GetMapping("/all")
@@ -24,18 +25,23 @@ class ArticleController(
     }
 
     @GetMapping("/{articleId}")
-    suspend fun get(@PathVariable articleId: Long): ResArticle {
+    suspend fun get(@PathVariable articleId: Long): Article {
         return articleService.get(articleId)
+    }
+
+    @GetMapping("/cached/{articleId}")
+    suspend fun getCached(@PathVariable articleId: Long): Article {
+        return articleService.getCached(articleId)
     }
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    suspend fun create(@RequestBody request: SaveArticle): ResArticle {
+    suspend fun create(@RequestBody request: ReqCreate): Article {
         return articleService.create(request)
     }
 
     @PutMapping("/{articleId}")
-    suspend fun update(@PathVariable articleId: Long, @RequestBody request: SaveArticle): ResArticle {
+    suspend fun update(@PathVariable articleId: Long, @RequestBody request: ReqUpdate): Article {
         return articleService.update(articleId, request)
     }
 

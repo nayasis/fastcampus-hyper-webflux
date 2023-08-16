@@ -1,1 +1,1 @@
-rootProject.name = "spring-coroutine"
+rootProject.name = "webflux-coroutine"
