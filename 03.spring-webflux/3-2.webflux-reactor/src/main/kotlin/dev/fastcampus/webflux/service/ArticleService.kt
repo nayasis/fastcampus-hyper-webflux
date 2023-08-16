@@ -20,8 +20,6 @@ private val logger = KotlinLogging.logger {}
 class ArticleService(
     private val articleRepository: ArticleRepository,
     private val redisTemplate: ReactiveRedisTemplate<Any, Any>,
-    @Value("\${spring.profiles.active}")
-    private val profile: String,
 ) {
 
     val ops = redisTemplate.opsForValue()
@@ -40,7 +38,7 @@ class ArticleService(
     }
 
     fun getCached(id: Long): Mono<Article> {
-        val key = "reactor/${profile}/article/${id}"
+        val key = "reactor/article/${id}"
         return ops.get(key).switchIfEmpty {
             get(id).flatMap {
                 ops.set(key,it)

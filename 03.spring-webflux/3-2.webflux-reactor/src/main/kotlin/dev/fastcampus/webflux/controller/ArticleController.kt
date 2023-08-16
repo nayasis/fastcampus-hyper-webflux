@@ -29,7 +29,7 @@ class ArticleController(
         return articleService.get(articleId)
     }
 
-    @GetMapping("/cached/{articleId}")
+    @GetMapping("/{articleId}/cache")
     fun getCached(@PathVariable articleId: Long): Mono<Article> {
         return articleService.getCached(articleId)
     }

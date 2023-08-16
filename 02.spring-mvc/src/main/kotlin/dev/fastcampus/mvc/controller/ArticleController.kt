@@ -34,7 +34,7 @@ class ArticleController(
         return articleService.get(articleId)
     }
 
-    @GetMapping("/cached/{articleId}")
+    @GetMapping("/{articleId}/cache")
     fun getCached(@PathVariable articleId: Long): Article {
         return articleService.getCached(articleId)
     }

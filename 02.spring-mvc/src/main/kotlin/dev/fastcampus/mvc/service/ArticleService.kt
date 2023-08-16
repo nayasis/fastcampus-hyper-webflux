@@ -16,8 +16,6 @@ import java.time.LocalDateTime
 class ArticleService(
     private val repository: ArticleRepository,
     private val redisTemplate: RedisTemplate<Any,Any>,
-    @Value("\${spring.profiles.active}")
-    private val profile: String,
 ) {
 
     private val ops = redisTemplate.opsForValue()
@@ -36,7 +34,7 @@ class ArticleService(
     }
 
     fun getCached(id: Long): Article {
-        val key = "mvc/${profile}/article/${id}"
+        val key = "mvc/article/${id}"
         return ops.get(key)?.let { it as Article } ?: get(id).also {
             ops.set(key, it)
             redisTemplate.expire(key, Duration.ofSeconds(120))
