@@ -3,6 +3,7 @@ package dev.fastcampus.payment.model
 import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
+import dev.fastcampus.payment.model.parent.BaseEntity
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -11,26 +12,16 @@ import java.time.LocalDateTime
 import javax.annotation.processing.Generated
 
 @Table("TB_PROD")
-class Product {
-
+class Product(
     @Id
     @Generated
-    var id: Long = 0
+    var id: Long = 0,
+    var name: String = "",
+    var price: Long = 0,
+    var hashtag: Set<String>? = null,
+): BaseEntity() {
 
-    var name: String = ""
-
-    var price: Long = 0
-
-    var hashtag: Set<String>? = null
-
-    @CreatedDate
-    var createdAt: LocalDateTime? = null
-
-    @LastModifiedDate
-    var updatedAt: LocalDateTime? = null
-
-    constructor()
-    constructor(name: String, price: Long, hashtag: Set<String>? = null) {
+    constructor(name: String, price: Long, hashtag: Set<String>? = null): this() {
         this.name    = name
         this.price   = price
         this.hashtag = hashtag
@@ -43,8 +34,6 @@ class Product {
         Product::name,
         Product::price,
         Product::hashtag,
-        Product::createdAt,
-        Product::updatedAt
-    ))
+    ), superToString = {super.toString()})
 
 }

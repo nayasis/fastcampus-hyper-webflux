@@ -1,7 +1,6 @@
 package dev.fastcampus.payment.model.enum
 
 enum class TxStatus {
-
     NONE,
     CREATE,
     REQUEST_CONFIRM,
@@ -9,5 +8,4 @@ enum class TxStatus {
     FAIL,
     NEED_CHECK
     ;
-
 }

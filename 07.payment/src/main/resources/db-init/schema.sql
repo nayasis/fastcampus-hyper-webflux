@@ -19,3 +19,14 @@ CREATE TABLE IF NOT EXISTS TB_PROD (
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS TB_PURCHASE_HISTORY (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT,
+    prod_id BIGINT,
+    description VARCHAR(2000),
+    amount  BIGINT,
+    order_id BIGINT
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
