@@ -16,24 +16,41 @@ private val logger = KotlinLogging.logger{}
 
 @SpringBootTest
 @ActiveProfiles("test")
-@DirtiesContext
 class ArticleServiceTest(
     @Autowired private val articleService: ArticleService,
 ) {
 
+//    @Test
+//    fun getAll() {
+//
+//        articleService.create(ReqCreate("title 1", "blabla 01", 1234)).block()
+//        articleService.create(ReqCreate("title 2", "blabla 02", 1234)).block()
+//        articleService.create(ReqCreate("title 3", "blabla 03", 1234)).block()
+//
+//        articleService.getAll().collectList().doOnNext { assertEquals(3, it.size) }.block()
+//        articleService.getAll("2").collectList().doOnNext { assertEquals(1, it.size) }.block()
+//    }
+
     @Test
     fun getAll() {
-        articleService.getAll().collectList().doOnNext { assertEquals(3, it.size) }.block()
-        articleService.getAll("2").collectList().doOnNext { assertEquals(1, it.size) }.block()
+        Mono.zip(
+            articleService.create(ReqCreate("title 1", "blabla 01", 1234)),
+            articleService.create(ReqCreate("title 2", "blabla 02", 1234)),
+            articleService.create(ReqCreate("title 3", "blabla 03", 1234)),
+        ).doOnNext {
+            articleService.getAll().collectList().doOnNext { assertEquals(3, it.size) }.block()
+            articleService.getAll("2").collectList().doOnNext { assertEquals(1, it.size) }.block()
+        }.rollback()
     }
 
     @Test
     fun get() {
-        articleService.get(1).doOnNext {
+        val new = articleService.create(ReqCreate("title 1", "blabla 01", 1234)).block()!!
+        articleService.get(new.id).doOnNext {
             assertEquals("title 1", it.title)
             assertEquals("blabla 01", it.body)
             assertEquals(1234, it.authorId)
-        }.block()
+        }.rollback().block()
         assertThrows<NotFoundException> {
             articleService.get(-1).block()
         }
@@ -55,11 +72,11 @@ class ArticleServiceTest(
         val prevSize = getArticleSize()
         val new = articleService.create(ReqCreate("title 4", "blabla 04", 1234)).toFuture().get()
         assertEquals(prevSize + 1, getArticleSize())
-        articleService.delete(new.id).toFuture().get()
+        articleService.delete(new.id).block()
         assertEquals(prevSize, getArticleSize())
     }
 
-    private fun getArticleSize(): Int = articleService.getAll().collectList().map { it.size }.toFuture().get() ?: 0
+    private fun getArticleSize(): Int = articleService.getAll().collectList().map { it.size }.block() ?: 0
 
     @Test
     fun deleteInRollback() {

@@ -55,7 +55,7 @@ class ArticleServiceTest(
     }
 
     "create" {
-        val request = SaveArticle("title 4", "blabla 04", 1234)
+        val request = ReqCreate("title 4", "blabla 04", 1234)
         rxtx.executeAndAwait { tx ->
             tx.setRollbackOnly()
             articleService.create(request).let {
@@ -69,7 +69,7 @@ class ArticleServiceTest(
     "create fail and rollback" {
         val prevSize = getArticleSize()
         shouldThrow<Exception> {
-            articleService.create(SaveArticle("error", "blabla 04", 1234))
+            articleService.create(ReqCreate("error", "blabla 04", 1234))
         }
         getArticleSize() shouldBe prevSize
     }
@@ -78,7 +78,7 @@ class ArticleServiceTest(
         val newAuthorId = 999_999L
         rxtx.executeAndAwait { tx ->
             tx.setRollbackOnly()
-            articleService.update(1, SaveArticle(authorId=newAuthorId)).let {
+            articleService.update(1, ReqCreate(authorId=newAuthorId)).let {
                 it.authorId = newAuthorId
             }
         }
@@ -89,7 +89,7 @@ class ArticleServiceTest(
         rxtx.executeAndAwait { tx ->
             tx.setRollbackOnly()
             val prevSize = getArticleSize()
-            val created = articleService.create(SaveArticle("title 4", "blabla 04", 1234))
+            val created = articleService.create(ReqCreate("title 4", "blabla 04", 1234))
             getArticleSize() shouldBe prevSize + 1
             articleService.delete(created.id)
             getArticleSize() shouldBe prevSize

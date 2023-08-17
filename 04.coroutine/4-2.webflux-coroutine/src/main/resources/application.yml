@@ -49,7 +49,7 @@ spring:
     url: r2dbc:pool:h2:mem://localhost/sample
   sql:
     init:
-      mode: never
+      mode: embedded
 ---
 spring:
   config:

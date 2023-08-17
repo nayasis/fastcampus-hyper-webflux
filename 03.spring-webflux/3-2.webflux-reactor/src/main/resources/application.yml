@@ -14,7 +14,6 @@ spring:
     init:
       mode: embedded
       schema-locations: classpath:db-init/schema.sql
-      data-locations: classpath:db-init/data.sql
 server:
   error:
     include-exception: true
@@ -25,6 +24,10 @@ spring:
   config:
     activate:
       on-profile: local
+  sql:
+    init:
+      mode: embedded
+      data-locations: classpath:db-init/data.sql
 logging:
   level:
 #    org.springframework.r2dbc.core: debug
@@ -34,10 +37,6 @@ spring:
   config:
     activate:
       on-profile: test
-  sql:
-    init:
-      mode: embedded
-      data-locations: classpath:db-init/test.sql
 logging:
   level:
     org.springframework.r2dbc.core: debug

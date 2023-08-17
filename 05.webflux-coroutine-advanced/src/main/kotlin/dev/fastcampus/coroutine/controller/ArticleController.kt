@@ -1,20 +1,12 @@
 package dev.fastcampus.coroutine.controller
 
+import dev.fastcampus.coroutine.model.Article
 import dev.fastcampus.coroutine.service.ArticleService
-import dev.fastcampus.coroutine.service.ResArticle
-import dev.fastcampus.coroutine.service.SaveArticle
+import dev.fastcampus.coroutine.service.ReqCreate
+import dev.fastcampus.coroutine.service.ReqUpdate
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.io.Serializable
 
 private val logger = KotlinLogging.logger {}
@@ -26,7 +18,7 @@ class ArticleController(
 ) {
 
 //    @GetMapping("/article/all")
-//    suspend fun getAll(@RequestParam title: String?): List<Post> {
+//    suspend fun getAll(@RequestParam title: String?): List<Article> {
 //        return if(title.isNullOrEmpty()) {
 //            articleService.getAll()
 //        } else {
@@ -35,23 +27,23 @@ class ArticleController(
 //    }
 
     @GetMapping("/all")
-    suspend fun getAll(request: QryArticle): List<ResArticle> {
+    suspend fun getAll(request: QryArticle): List<Article> {
         return articleService.getAllCached(request)
     }
 
     @GetMapping("/{articleId}")
-    suspend fun get(@PathVariable articleId: Long): ResArticle {
+    suspend fun get(@PathVariable articleId: Long): Article {
         return articleService.get(articleId)
     }
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    suspend fun create(@RequestBody request: SaveArticle): ResArticle {
+    suspend fun create(@RequestBody request: ReqCreate): Article {
         return articleService.create(request)
     }
 
     @PutMapping("/{articleId}")
-    suspend fun update(@PathVariable articleId: Long, @RequestBody request: SaveArticle, @RequestParam delay: Long?): ResArticle {
+    suspend fun update(@PathVariable articleId: Long, @RequestBody request: ReqUpdate, @RequestParam delay: Long?): Article {
         return articleService.update(articleId, request, delay ?: 5000L)
     }
 

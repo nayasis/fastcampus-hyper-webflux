@@ -26,7 +26,7 @@ class MassDataInitializer: StringSpec({
             val buffer = ArrayList<Article>()
             repeat(1_999_999) { i ->
 //            repeat(100_000) { i ->
-                buffer.add(Article("title $i", "body $i", i.toLong() ))
+                buffer.add(Article(title = "title $i", body="body $i", authorId=i.toLong() ))
                 if( i % 20000 == 0) {
                     println(">> $i")
                     Articles.batchInsert(
@@ -45,7 +45,7 @@ class MassDataInitializer: StringSpec({
             }
 
             buffer.add(
-                Article("title matched", "contents matched", 0.toLong() )
+                Article(title="title matched", body="contents matched", authorId=0L )
             )
             Articles.batchInsert(
                 buffer,

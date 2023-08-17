@@ -13,7 +13,7 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
 	mavenCentral()
-	maven { url = uri("https://repository.apache.org/snapshots") }
+	jcenter()
 }
 
 dependencies {
@@ -23,10 +23,9 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.2")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.7.2")
 	implementation("io.micrometer:context-propagation:1.0.3")
+	implementation("au.com.console:kassava:2.1.0")
 
 	implementation("org.springframework.boot:spring-boot-starter-aop")
-
-//	implementation("io.github.numichi:reactive-logger:5.1.4")
 
 	// circuit breaker
 	implementation("io.github.resilience4j:resilience4j-kotlin:2.0.0")
@@ -42,7 +41,7 @@ dependencies {
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	runtimeOnly("org.mariadb:r2dbc-mariadb")
-	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+//	tesruntimeOnly("org.mariadb.jdbc:mariadb-java-client")
 //	runtimeOnly("com.h2database:h2")
 //	runtimeOnly("io.r2dbc:r2dbc-h2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -51,6 +50,9 @@ dependencies {
 	testImplementation("io.kotest:kotest-runner-junit5:5.6.1")
 	testImplementation("io.kotest:kotest-assertions-core:5.6.1")
 	testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
+
+	testRuntimeOnly("com.h2database:h2")
+	testRuntimeOnly("io.r2dbc:r2dbc-h2")
 
 }
 

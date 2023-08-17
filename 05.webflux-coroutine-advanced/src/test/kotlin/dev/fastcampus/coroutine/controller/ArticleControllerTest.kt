@@ -1,7 +1,9 @@
 package dev.fastcampus.coroutine.controller
 
+import dev.fastcampus.coroutine.model.Article
 import dev.fastcampus.coroutine.service.ResArticle
-import dev.fastcampus.coroutine.service.SaveArticle
+import dev.fastcampus.coroutine.service.ReqCreate
+import dev.fastcampus.coroutine.service.ReqUpdate
 import io.kotest.core.spec.style.StringSpec
 import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,7 +35,7 @@ class ArticleControllerTest(
     val client = WebTestClient.bindToApplicationContext(context).build()
 
     fun getArticleSize(): Int {
-        val ref = object: ParameterizedTypeReference<ArrayList<ResArticle>>(){}
+        val ref = object: ParameterizedTypeReference<ArrayList<Article>>(){}
         return client.get().uri("/article/all").accept(APPLICATION_JSON).exchange().expectBody(ref).returnResult().responseBody?.size ?: 0
     }
 
@@ -59,7 +61,7 @@ class ArticleControllerTest(
     }
 
     "create" {
-        val request = SaveArticle("test", "it is r2dbc demo", 1234)
+        val request = ReqCreate("test", "it is r2dbc demo", 1234)
         client.post().uri("/article").accept(APPLICATION_JSON).bodyValue(request).exchange()
             .expectStatus().isCreated
             .expectBody()
@@ -69,7 +71,7 @@ class ArticleControllerTest(
     }
 
     "update" {
-        val request = SaveArticle(authorId = 999999)
+        val request = ReqUpdate(authorId = 999999)
         client.put().uri("/article/1").accept(APPLICATION_JSON).bodyValue(request).exchange()
             .expectStatus().isOk
             .expectBody()
@@ -79,8 +81,8 @@ class ArticleControllerTest(
     "delete" {
         val prevSize = getArticleSize()
         val res = client.post().uri("/article").accept(APPLICATION_JSON)
-            .bodyValue(SaveArticle("test", "it is r2dbc demo", 1234)).exchange()
-            .expectBody(ResArticle::class.java).returnResult().responseBody!!
+            .bodyValue(ReqCreate("test", "it is r2dbc demo", 1234)).exchange()
+            .expectBody(Article::class.java).returnResult().responseBody!!
         assertEquals(prevSize + 1, getArticleSize())
         client.delete().uri("/article/${res.id}").exchange().expectStatus().isOk
         assertEquals(prevSize, getArticleSize())

@@ -10,7 +10,10 @@ plugins {
 
 group = "dev.fastcampus"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+}
 
 repositories {
 	mavenCentral()
@@ -29,7 +32,6 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 	runtimeOnly("org.mariadb:r2dbc-mariadb")
-//	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 
@@ -54,15 +56,4 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-}
-
-tasks.withType<BootBuildImage> {
-//	// set tls cert pipeline for company's security policy
-	docker {
-		tlsVerify.set(false)
-	}
-////	bindings.add("${project.projectDir}/ca-certficates/binding:/bindings/ca-certificates")
-//	environment.put("BPE_APPEND_JAVA_TOOL_OPTIONS", "\"-Xmx2048m -XX:MaxDirectMemorySize=512m")
-////	environment.put("BPE_APPEND_JAVA_TOOL_OPTIONS", "\"-Xmx4096m")
-////	environment.put("BPL_JVM_HEAD_ROOM", "5")
 }

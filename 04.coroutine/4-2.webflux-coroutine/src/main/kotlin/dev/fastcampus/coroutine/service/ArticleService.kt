@@ -45,7 +45,12 @@ class ArticleService(
             title = request.title,
             body = request.body,
             authorId = request.authorId
-        ))
+        )).let {
+            if(it.title == "error") {
+                throw RuntimeException("error")
+            }
+            it
+        }
     }
 
     @Transactional

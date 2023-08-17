@@ -55,11 +55,11 @@ class ArticleService(
         }
     }
 
-    suspend fun getAllCached(request: QryArticle): List<ResArticle> {
+    suspend fun getAllCached(request: QryArticle): List<Article> {
         val key = SimpleKey(CACHE_PREFIX, request)
-        return cache.get<List<ResArticle>>(key).ifNull {
+        return cache.get<List<Article>>(key).ifNull {
             logger.debug { "> no cache hit" }
-            getAll(request).map { ResArticle(it) }.also {
+            getAll(request).also {
                 cache.set(key, it, 10.minutes)
             }
         }
@@ -96,7 +96,7 @@ class ArticleService(
         return sql.map { row, _ ->
             Article().apply {
                 this.id = row.get("id", Long::class.java)!!
-                this.title = row.get("title", String::class.java)
+                this.title = row.get("title", String::class.java) ?: ""
                 this.body = row.get("body", String::class.java)
                 this.authorId = row.get("author_id", Long::class.java)
                 this.createdAt = row.get("created_at", LocalDateTime::class.java)
@@ -106,12 +106,12 @@ class ArticleService(
 
     }
 
-    suspend fun get(articleId: Long): ResArticle {
-        return repository.findById(articleId)?.let { ResArticle(it) } ?: throw NotFoundException("article id : $articleId")
+    suspend fun get(articleId: Long): Article {
+        return repository.findById(articleId) ?: throw NotFoundException("article id : $articleId")
     }
 
     @Transactional
-    suspend fun create(request: SaveArticle): ResArticle {
+    suspend fun create(request: ReqCreate): Article {
         return repository.save(Article().apply {
             title = request.title
             body = request.body
@@ -120,19 +120,19 @@ class ArticleService(
             if(it.title == "error") {
                 throw RuntimeException("error")
             }
-            ResArticle(it)
+            it
         }
     }
 
     @Transactional
-    suspend fun update(articleId: Long, request: SaveArticle, delay: Long = 5000): ResArticle {
+    suspend fun update(articleId: Long, request: ReqUpdate, delay: Long = 5000): Article {
         return locker.lock(articleId) {
             repository.findById(articleId)?.let { article ->
                 request.title?.let { article.title = it }
                 request.body?.let { article.body = it }
                 request.authorId?.let { article.authorId = it }
                 delay(delay)
-                repository.save(article).let { ResArticle(it) }
+                repository.save(article)
             } ?: throw NotFoundException("No article(id:$articleId) found")
         }
     }
@@ -156,28 +156,14 @@ inline fun <T> T?.ifNull(function: () -> T): T {
     return this ?: function.invoke()
 }
 
-data class SaveArticle(
-    var title: String? = null,
+data class ReqCreate(
+    var title: String,
     var body: String? = null,
     var authorId: Long? = null,
 )
 
-data class ResArticle(
-    var id: Long,
-    var title: String,
-    var body: String,
-    var authorId: Long,
-    var createdAt: LocalDateTime?,
-    var updatedAt: LocalDateTime?,
-    var version: Int,
-) {
-    constructor(article: Article): this(
-        id = article.id,
-        title = article.title ?: "",
-        body = article.body ?: "",
-        authorId = article.authorId ?: 0,
-        createdAt = article.createdAt,
-        updatedAt = article.updatedAt,
-        version = article.version,
-    )
-}
+data class ReqUpdate(
+    var title: String? = null,
+    var body: String? = null,
+    var authorId: Long? = null,
+)
