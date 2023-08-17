@@ -17,8 +17,8 @@ fun subB(i: Int): Mono<Int> {
 fun main() {
     val request = getRequest()
     subA(request)
-//        .doOnNext { println("ans1 : $it") }
+        .doOnNext { println("ans1 : $it") }
         .flatMap { subB(it) }
-//        .doOnNext { println("ans2 : $it") }
+        .doOnNext { println("ans2 : $it") }
         .subscribe()
 }

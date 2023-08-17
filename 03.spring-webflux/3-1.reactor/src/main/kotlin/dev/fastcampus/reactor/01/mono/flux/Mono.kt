@@ -1,6 +1,10 @@
 package dev.fastcampus.reactor.`01`.mono.flux
 
+import mu.KotlinLogging
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+
+private val logger = KotlinLogging.logger {}
 
 fun add(i : Int): Int {
     return i + 5
@@ -23,10 +27,6 @@ fun main() {
 //    Flux.range(1,10).map { add(it) }.doOnNext { println(it) }.subscribe()
 //    Flux.range(1,10).flatMap {  addAsync(it) }.doOnNext { println(it) }.subscribe()
 
-
 //    Mono.just(1).flux().doOnNext { println(it) }.subscribe()
-
-//    println( final.subscribe() )
-
 
 }
