@@ -76,8 +76,6 @@ class ArticleControllerTest(
             .expectStatus().is4xxClientError
     }
 
-
-
     "update" {
         val request = ReqUpdate(authorId = 999999)
         client.put().uri("/article/1").accept(APPLICATION_JSON).bodyValue(request).exchange()
