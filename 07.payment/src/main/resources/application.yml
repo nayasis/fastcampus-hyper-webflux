@@ -1,4 +1,8 @@
 spring:
+  profiles:
+    active: local
+---
+spring:
   application:
     name: payment
   output:
@@ -34,10 +38,16 @@ logging:
     org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler: off
     dev.fastcampus: debug
   pattern:
-    console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%X{txid:-}|%green(%t)|%logger|%blue(\\(%F:%L\\))|%msg%n"
+#    console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%X{txid:-}|%green(%t)|%logger|%blue(\\(%F:%L\\))|%msg%n"
+    console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%X{txid:-}|%green(%t)|%blue(%50(\\(%F:%L\\)))|%msg%n"
 management:
   endpoint:
     health:
       enabled: true
     info:
       enabled: true
+payment:
+  key:
+   toss:
+     client: test_ck_kZLKGPx4M3Ml6zjRqkE8BaWypv1o
+     secret: dGVzdF9za19PRVA1OUx5Ylo4QldrMlpMRzFaMzZHWW83cFJlOg==

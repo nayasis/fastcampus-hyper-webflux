@@ -1,0 +1,16 @@
+### 검색어
+GET {{domain}}/order/history?userId=1&keyword=orange
+Content-Type: application/json
+
+
+### 기간
+GET {{domain}}/order/history?userId=1&fromDate=2023-08-19&toDate=2023-08-19
+Content-Type: application/json
+
+### 페이징
+GET {{domain}}/order/history?userId=1&page=1&limit=1
+Content-Type: application/json
+
+### 금액
+GET {{domain}}/order/history?userId=1&fromAmount=110
+Content-Type: application/json

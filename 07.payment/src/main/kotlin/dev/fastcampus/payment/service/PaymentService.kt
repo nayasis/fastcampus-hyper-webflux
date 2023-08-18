@@ -9,6 +9,7 @@ import io.netty.handler.ssl.SslContextBuilder
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import kotlinx.coroutines.reactor.awaitSingle
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
@@ -29,6 +30,8 @@ private val logger = KotlinLogging.logger {}
 @Service
 class PaymentService(
     private val orderRepository: OrderRepository,
+    @Value("\${payment.key.toss.secret}")
+    private val secretKey: String,
 ) {
 
     private val client = createWebClient()

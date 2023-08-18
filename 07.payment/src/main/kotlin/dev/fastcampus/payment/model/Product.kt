@@ -3,28 +3,25 @@ package dev.fastcampus.payment.model
 import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
+import com.fasterxml.jackson.annotation.JsonIgnore
 import dev.fastcampus.payment.model.parent.BaseEntity
-import org.springframework.data.annotation.CreatedDate
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.domain.Persistable
 import org.springframework.data.relational.core.mapping.Table
-import java.time.LocalDateTime
-import javax.annotation.processing.Generated
 
 @Table("TB_PROD")
 class Product(
     @Id
-    @Generated
     var id: Long = 0,
     var name: String = "",
+    var localName: String = "",
     var price: Long = 0,
-    var hashtag: Set<String>? = null,
-): BaseEntity() {
+): BaseEntity(), Persistable<Long> {
 
-    constructor(name: String, price: Long, hashtag: Set<String>? = null): this() {
-        this.name    = name
-        this.price   = price
-        this.hashtag = hashtag
+    constructor(name: String, price: Long): this() {
+        this.name  = name
+        this.price = price
     }
 
     override fun equals( other:Any? ): Boolean = kotlinEquals(other, arrayOf(Product::id))
@@ -33,7 +30,20 @@ class Product(
         Product::id,
         Product::name,
         Product::price,
-        Product::hashtag,
+        Product::localName,
     ), superToString = {super.toString()})
+
+
+    override fun getId(): Long = id
+
+//    // transient not works in R2DBC (https://github.com/spring-projects/spring-data-r2dbc/issues/449)
+//    @Transient
+    @Value("null")
+    @JsonIgnore
+    var new: Boolean = false
+
+    override fun isNew(): Boolean {
+        return new
+    }
 
 }

@@ -43,16 +43,16 @@ class ViewController(
         return "pay.html"
     }
 
-    @GetMapping("/payment/success")
+    @GetMapping("/pay/success")
     suspend fun isPaymentSuccessed(request: PaymentSuccess, model: Model): String {
-        return if(paymentService.confirm(request)) "payment_success.html" else {
-            "payment_fail.html"
+        return if(paymentService.confirm(request)) "pay_success.html" else {
+            "pay_fail.html"
         }
     }
 
-    @RequestMapping("/payment/fail")
+    @RequestMapping("/pay/fail")
     suspend fun isPaymentFailed(request: PaymentFail): String {
-        return "payment_fail.html"
+        return "pay_fail.html"
     }
 
 }

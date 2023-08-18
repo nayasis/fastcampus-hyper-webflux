@@ -13,20 +13,9 @@ CREATE TABLE IF NOT EXISTS TB_ORDER (
 
 CREATE TABLE IF NOT EXISTS TB_PROD (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `name` VARCHAR(500),
+    `name` VARCHAR(200),
+    local_name VARCHAR(200),
     price BIGINT,
-    hashtag VARCHAR(2000),
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS TB_PURCHASE_HISTORY (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT,
-    prod_id BIGINT,
-    description VARCHAR(2000),
-    amount  BIGINT,
-    order_id BIGINT
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );

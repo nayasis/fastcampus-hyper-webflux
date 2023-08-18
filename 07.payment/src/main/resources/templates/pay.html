@@ -1,9 +1,14 @@
 <head>
-    <meta charset="utf-8" />
-    <!-- 결제위젯 SDK 추가 -->
-    <script src="https://js.tosspayments.com/v1/payment-widget"></script>
-</head>
-<body>
+  <meta charset="utf-8" />
+  <!-- 결제위젯 SDK 추가 -->
+  <script src="https://js.tosspayments.com/v1/payment-widget"></script>
+</head><body>
+
+<div>
+  <p>구매할 상품</p>
+  <p th:text="${order.description}"></p>
+</div>
+
 <!-- 결제위젯, 이용약관 영역 -->
 <div id="payment-method"></div>
 <div id="agreement"></div>
@@ -11,7 +16,7 @@
 <button id="payment-button">결제하기</button>
 <script>
 
-    const clientKey = "test_ck_kZLKGPx4M3Ml6zjRqkE8BaWypv1o"
+    const clientKey = "[[${@environment.getProperty('payment.key.toss.client')}]]"
     const customerKey = "[[${order.userId}]]" // 내 상점에서 고객을 구분하기 위해 발급한 고객의 고유 ID
 
     const button = document.getElementById("payment-button")
@@ -39,8 +44,8 @@
         paymentWidget.requestPayment({
             orderId: "[[${order.orderId}]]",     // 주문 ID(직접 만들어주세요)
             orderName: "[[${order.description}]]",  // 주문명
-            successUrl: "http://localhost:8080/payment/success",  // 결제에 성공하면 이동하는 페이지(직접 만들어주세요)
-            failUrl: "http://localhost:8080/payment/fail",        // 결제에 실패하면 이동하는 페이지(직접 만들어주세요)
+            successUrl: "http://localhost:8080/pay/success",  // 결제에 성공하면 이동하는 페이지(직접 만들어주세요)
+            failUrl: "http://localhost:8080/pay/fail",        // 결제에 실패하면 이동하는 페이지(직접 만들어주세요)
             customerEmail: "customer.test@gmail.com",
             customerName: "테스트 고객"
         })

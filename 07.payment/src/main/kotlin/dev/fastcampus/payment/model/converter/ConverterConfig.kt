@@ -35,7 +35,7 @@ class ConverterConfig(
     @Bean
     fun converters(connectionFactory: ConnectionFactory): R2dbcCustomConversions {
         val dialect = DialectResolver.getDialect(connectionFactory);
-        return R2dbcCustomConversions.of( dialect, listOf(
+        return R2dbcCustomConversions.of(dialect, listOf(
             fromSetToString(),
             fromStringToSet(),
         ))
