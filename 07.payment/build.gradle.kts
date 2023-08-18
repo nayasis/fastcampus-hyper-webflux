@@ -21,7 +21,9 @@ repositories {
 
 dependencies {
 
-	implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5")
+	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+
+//	implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("au.com.console:kassava:2.1.0")
 	implementation("io.github.microutils:kotlin-logging:3.0.5")

@@ -20,6 +20,8 @@ spring:
     redis:
       host: localhost
       port: 6379
+  elasticsearch:
+    uris: localhost:9200
 #  thymeleaf:
 #    cache: false
 server:
