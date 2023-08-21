@@ -24,6 +24,9 @@ logging:
     dev.fastcampus.kafka: debug
   pattern:
     console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%green(%t)|%blue(\\(%F:%L\\))|%msg%n"
+payment:
+  kafka:
+    topic: PURCHASE
 ---
 spring:
   config:

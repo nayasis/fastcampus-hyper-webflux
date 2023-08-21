@@ -4,13 +4,10 @@ import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
 import dev.fastcampus.payment.common.Beans
-import dev.fastcampus.payment.model.enum.TxStatus
+import dev.fastcampus.payment.model.code.TxStatus
 import dev.fastcampus.payment.model.parent.BaseEntity
-import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.relational.core.mapping.Table
-import java.time.LocalDateTime
 import java.util.UUID
 import javax.annotation.processing.Generated
 

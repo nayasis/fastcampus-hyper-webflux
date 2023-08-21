@@ -25,5 +25,4 @@ class Beans: ApplicationContextAware {
         val productRepository: ProductRepository by lazy { getBean(ProductRepository::class) }
     }
 
-
 }

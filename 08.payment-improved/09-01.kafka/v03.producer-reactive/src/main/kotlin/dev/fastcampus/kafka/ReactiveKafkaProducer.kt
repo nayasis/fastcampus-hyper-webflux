@@ -5,8 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.streams.StreamsConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.boot.runApplication
@@ -15,7 +13,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import reactor.kafka.sender.SenderOptions
-import reactor.kafka.sender.SenderRecord
 import java.time.LocalDate
 
 fun main(args: Array<String>) {

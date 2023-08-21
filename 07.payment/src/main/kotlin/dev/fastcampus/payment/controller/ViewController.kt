@@ -1,7 +1,7 @@
 package dev.fastcampus.payment.controller
 
 import dev.fastcampus.payment.model.Order
-import dev.fastcampus.payment.model.enum.TxStatus
+import dev.fastcampus.payment.model.code.TxStatus
 import dev.fastcampus.payment.repository.ProductRepository
 import dev.fastcampus.payment.service.OrderService
 import dev.fastcampus.payment.service.PaymentService

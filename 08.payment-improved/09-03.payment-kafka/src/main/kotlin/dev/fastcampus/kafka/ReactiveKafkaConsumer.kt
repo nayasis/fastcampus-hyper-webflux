@@ -1,7 +1,7 @@
 package dev.fastcampus.kafka
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import jakarta.annotation.PostConstruct
+import dev.fastcampus.kafka.model.PurchaseHistory
+import dev.fastcampus.kafka.repository.PurchaseHistoryRepository
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.mono
 import mu.KotlinLogging
@@ -9,10 +9,11 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
+import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.runApplication
+import org.springframework.context.ApplicationListener
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.env.Environment
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.TopicBuilder
@@ -22,7 +23,6 @@ import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import reactor.core.publisher.Flux
 import reactor.kafka.receiver.ReceiverOptions
 import reactor.kafka.sender.SenderOptions
-import java.time.LocalDate
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
@@ -37,67 +37,40 @@ fun main(args: Array<String>) {
 @EnableKafka
 class ReactiveKafkaConsumer(
 	private val redisTemplate: RedisTemplate<Any, Any>,
-	private val consumer: ReactiveKafkaConsumerTemplate<String,Person>,
-	private val producer: ReactiveKafkaProducerTemplate<String,Person>,
-	environment: Environment,
-) {
+	private val consumer: ReactiveKafkaConsumerTemplate<String,PurchaseHistory>,
+	private val producer: ReactiveKafkaProducerTemplate<String,PurchaseHistory>,
+	private val repository: PurchaseHistoryRepository,
+	@Value("\${payment.kafka.topic}")
+	private val topic: String,
+): ApplicationListener<ApplicationReadyEvent> {
 
-	private val onTest = "test" in environment.activeProfiles
-
-	@PostConstruct
-	fun init() {
-		consumer.receiveAutoAck()
-//            .doOnNext {
-//                runBlocking(Dispatchers.IO) {
-//                    executor(it)
-//                }
-//            }
-			.flatMap { it ->
-				mono {
-					executor(it)
-				}.thenMany(Flux.just(it))
-			}
-			.subscribe()
-		logger.debug { ">> ready to consume" }
-	}
-
-	suspend fun executor(record: ConsumerRecord<String, Person>) {
+	suspend fun executor(record: ConsumerRecord<String, PurchaseHistory>) {
 		if( alreadyReceived(record) ) return
 		try {
-			logger.debug { "> topic=${record.topic()}, partition=${record.partition()} offset=${record.offset()}" }
-			executor(record.value(), record)
+			logger.debug { "> topic: ${record.topic()}, partition: ${record.partition()} offset: ${record.offset()}, order: ${record.value().orderId}" }
+			repository.save(record.value())
 		} catch (e: Exception) {
 			logger.error(e.message, e)
-			producer.send("test", record.value()).awaitSingle()
+			producer.send(topic, record.value()).awaitSingle()
 		}
 	}
 
-	suspend fun alreadyReceived(record: ConsumerRecord<String, Person>): Boolean {
-		if(onTest) return false
-		val offset = "${record.topic()}-${record.partition()}-${record.offset()}"
+	suspend fun alreadyReceived(record: ConsumerRecord<String, PurchaseHistory>): Boolean {
+		val offset = "$topic::${record.topic()}-${record.partition()}-${record.offset()}"
 		return if(redisTemplate.opsForValue().setIfAbsent(offset, true) == true) {
 			redisTemplate.expire(offset, 10.minutes.toJavaDuration())
 			false
 		} else {
-			logger.debug { ">> already consumed !!" }
 			true
 		}
 	}
 
-suspend fun executor(person: Person, record: ConsumerRecord<String, Person>) {
-		if(Random.nextInt(3) == 0) {
-			throw RuntimeException("it is test error ! (topic=${record.topic()}, partition=${record.partition()} offset=${record.offset()})")
-		} else {
-			logger.debug { "success : $person (topic=${record.topic()}, partition=${record.partition()} offset=${record.offset()})" }
-		}
-
-		if(onTest) {
-			testResult.add(person.id)
-		}
-	}
-
-	companion object {
-		val testResult = ArrayList<Int?>()
+	override fun onApplicationEvent(event: ApplicationReadyEvent) {
+		consumer.receiveAutoAck()
+			.flatMap { it ->
+				mono { executor(it) }.thenMany(Flux.just(it))
+			}.subscribe()
+		logger.debug { ">> ready to consume" }
 	}
 
 }
@@ -105,39 +78,33 @@ suspend fun executor(person: Person, record: ConsumerRecord<String, Person>) {
 @Configuration
 class Config(
 	private val kafkaAdmin: KafkaAdmin,
-) {
-
-	@PostConstruct
-	fun init() {
-		kafkaAdmin.createOrModifyTopics(
-			TopicBuilder.name("test").partitions(1).replicas(1).build()
-		)
-	}
+	@Value("\${payment.kafka.topic}")
+	private val topic: String,
+): ApplicationListener<ApplicationReadyEvent> {
 
 	@Bean
-	fun reactiveConsumer(properties: KafkaProperties): ReactiveKafkaConsumerTemplate<String,Person> {
+	fun reactiveConsumer(properties: KafkaProperties): ReactiveKafkaConsumerTemplate<String,PurchaseHistory> {
 		return properties.buildConsumerProperties()
-			.let { prop -> ReceiverOptions.create<String,Person>(prop) }
-			.let { option -> option.subscription(listOf("test")) } // 구독할 topic을 적어준다.
+			.let { prop -> ReceiverOptions.create<String,PurchaseHistory>(prop) }
+			.let { option -> option.subscription(listOf(topic)) }
 			.let { option ->
 				ReactiveKafkaConsumerTemplate(option)
 			}
 	}
 
 	@Bean
-	fun reactiveProducer(properties: KafkaProperties): ReactiveKafkaProducerTemplate<String, Person> {
+	fun reactiveProducer(properties: KafkaProperties): ReactiveKafkaProducerTemplate<String, PurchaseHistory> {
 		return properties.buildProducerProperties()
 			.let { prop ->
-				SenderOptions.create<String,Person>(prop)
+				SenderOptions.create<String,PurchaseHistory>(prop)
 			}
 			.let { option -> ReactiveKafkaProducerTemplate(option) }
 	}
 
-}
+	override fun onApplicationEvent(event: ApplicationReadyEvent) {
+		kafkaAdmin.createOrModifyTopics(
+			TopicBuilder.name(topic).partitions(1).replicas(1).build()
+		)
+	}
 
-data class Person(
-	var id: Int? = null,
-	var name: String? = null,
-	var age: Int? = null,
-	var birthDay: LocalDate? = null,
-)
+}

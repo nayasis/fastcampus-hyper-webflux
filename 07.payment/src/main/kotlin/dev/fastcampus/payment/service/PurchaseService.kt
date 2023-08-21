@@ -1,7 +1,7 @@
 package dev.fastcampus.payment.service
 
 import dev.fastcampus.payment.model.PurchaseHistory
-import dev.fastcampus.payment.model.enum.TxStatus
+import dev.fastcampus.payment.model.code.TxStatus
 import dev.fastcampus.payment.repository.PurchaseHistoryRepository
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.data.domain.PageRequest

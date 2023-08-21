@@ -2,7 +2,7 @@ package dev.fastcampus.payment.service
 
 import dev.fastcampus.payment.exception.NotFoundException
 import dev.fastcampus.payment.model.Order
-import dev.fastcampus.payment.model.enum.TxStatus
+import dev.fastcampus.payment.model.code.TxStatus
 import dev.fastcampus.payment.repository.OrderRepository
 import dev.fastcampus.payment.repository.ProductRepository
 import kotlinx.coroutines.flow.toList
@@ -110,13 +110,13 @@ class OrderService(
 
         return sql.map { row, _ ->
             ResPurchaseHistory(
-                orderId = row.get("id") as Long,
-                prodId = row.get("prod_id") as Long,
-                prodNm = row.get("prod_nm") as String,
+                orderId     = row.get("id") as Long,
+                prodId      = row.get("prod_id") as Long,
+                prodNm      = row.get("prod_nm") as String,
                 description = (row.get("description") as? String) ?: "",
-                amount = row.get("amount") as Long,
-                status = (row.get("status") as String).let { TxStatus.valueOf(it) },
-                createdAt = row.get("created_at") as LocalDateTime,
+                amount      = row.get("amount") as Long,
+                status      = (row.get("status") as String).let { TxStatus.valueOf(it) },
+                createdAt   = row.get("created_at") as LocalDateTime,
             )
         }.flow().toList()
 

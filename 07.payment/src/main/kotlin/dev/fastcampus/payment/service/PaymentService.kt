@@ -2,12 +2,10 @@ package dev.fastcampus.payment.service
 
 import dev.fastcampus.payment.controller.PaymentSuccess
 import dev.fastcampus.payment.exception.InvalidPaymentException
-import dev.fastcampus.payment.exception.NotFoundException
-import dev.fastcampus.payment.model.enum.TxStatus
+import dev.fastcampus.payment.model.code.TxStatus
 import dev.fastcampus.payment.repository.OrderRepository
 import io.netty.handler.ssl.SslContextBuilder
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
-import kotlinx.coroutines.reactor.awaitSingle
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -15,10 +13,8 @@ import org.springframework.http.MediaType
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
-import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 import reactor.netty.resources.ConnectionProvider
 import java.time.Duration

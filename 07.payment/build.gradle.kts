@@ -21,6 +21,8 @@ repositories {
 
 dependencies {
 
+	implementation("io.projectreactor.kafka:reactor-kafka")
+	implementation("org.springframework.kafka:spring-kafka")
 	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 
 //	implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5")

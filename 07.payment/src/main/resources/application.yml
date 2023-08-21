@@ -53,3 +53,5 @@ payment:
    toss:
      client: test_ck_kZLKGPx4M3Ml6zjRqkE8BaWypv1o
      secret: dGVzdF9za19PRVA1OUx5Ylo4QldrMlpMRzFaMzZHWW83cFJlOg==
+  kafka:
+    topic: PURCHASE

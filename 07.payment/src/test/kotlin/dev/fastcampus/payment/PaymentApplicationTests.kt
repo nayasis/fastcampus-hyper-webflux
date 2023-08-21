@@ -30,7 +30,6 @@ class PaymentApplicationTests(
 //			tx.setRollbackOnly()
 
 			listOf(
-				Product("milk", 1000, setOf("a","b").toHashSet()),
 				Product("coffee", 4500),
 				Product("pillow", 12000),
 			).let {
