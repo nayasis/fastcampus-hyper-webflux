@@ -1,4 +1,4 @@
-package dev.fastcampus.payment.model.enum
+package dev.fastcampus.payment.model.code
 
 enum class TxStatus {
     NONE,
