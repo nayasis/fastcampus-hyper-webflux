@@ -13,9 +13,9 @@ import org.springframework.data.elasticsearch.repository.config.EnableReactiveEl
  * 1. @Id @Generated 작동 안함
  *    - Elasticsearch 에서 id 채번은 string 으로 처리 (_id 필드)
  *    - id 를 string 으로 처리하면, _id 필드값을 매핑해주긴 함
- * 2. Audit 처리가 수동에 가까움
+ * 2. Audit 처리는 수동
  *    - Persistable 인터페이스를 상속해 명시적으로 처리해야 함
- *    - update 상태는 어떻게 감지하나 ?
+ *    - update 상태는 isNew overriding 으로 구현
  */
 //@EnableElasticsearchAuditing
 class ElasticsearchApplication

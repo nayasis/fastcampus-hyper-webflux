@@ -93,7 +93,6 @@ class ArticleServiceTest(
             val updated = articleService.update(new.id, ReqUpdate(authorId=newAuthorId))
             updated.authorId shouldBe newAuthorId
         }
-
     }
 
     "delete" {

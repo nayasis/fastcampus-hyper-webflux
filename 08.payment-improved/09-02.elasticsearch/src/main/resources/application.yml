@@ -6,7 +6,6 @@ spring:
       enabled: always
   elasticsearch:
     uris: localhost:9200
-
 logging:
   level:
     dev.fastcampus: debug

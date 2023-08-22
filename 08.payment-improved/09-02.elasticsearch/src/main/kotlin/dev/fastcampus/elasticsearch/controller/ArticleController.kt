@@ -1,7 +1,7 @@
 package dev.fastcampus.elasticsearch.controller
 
-import dev.fastcampus.elasticsearch.model.ArticleDocument
-import dev.fastcampus.elasticsearch.repository.PostDocumentRepository
+import dev.fastcampus.elasticsearch.model.Article
+import dev.fastcampus.elasticsearch.repository.ArticleRepository
 import dev.fastcampus.elasticsearch.repository.PostDocumentRepositoryNative
 import dev.fastcampus.elasticsearch.repository.QrySearch
 import dev.fastcampus.elasticsearch.repository.ResSearch
@@ -16,23 +16,23 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/article")
-class PostController(
-    private val repository: PostDocumentRepository,
+class ArticleController(
+    private val repository: ArticleRepository,
     private val repositoryNative: PostDocumentRepositoryNative,
 ) {
 
     @GetMapping("/{id}")
-    suspend fun get(@PathVariable id: Long): ArticleDocument? {
+    suspend fun get(@PathVariable id: Long): Article? {
         return repository.findById(id)
     }
 
     @PostMapping
-    suspend fun save(@RequestBody request: ArticleDocument): ArticleDocument {
+    suspend fun save(@RequestBody request: Article): Article {
         return repository.save(request)
     }
 
     @PostMapping("/all")
-    suspend fun saveAll(@RequestBody requests: List<ArticleDocument>) {
+    suspend fun saveAll(@RequestBody requests: List<Article>) {
         // 마지막까지 기다려줘야 데이터가 모두 정상 입력됨
         repository.saveAll(requests).last()
     }
@@ -48,9 +48,7 @@ class PostController(
     }
 
     @GetMapping("/all")
-    suspend fun getAll(
-        request: QrySearch,
-    ): ResSearch {
+    suspend fun getAll(request: QrySearch): ResSearch {
         return repositoryNative.search(request)
     }
 
