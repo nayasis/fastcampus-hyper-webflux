@@ -1,7 +1,7 @@
 package dev.fastcampus.elasticsearch
 
 import dev.fastcampus.elasticsearch.common.WithTestContainer
-import dev.fastcampus.elasticsearch.model.PostDocument
+import dev.fastcampus.elasticsearch.model.ArticleDocument
 import dev.fastcampus.elasticsearch.repository.PostDocumentRepository
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
@@ -20,10 +20,10 @@ class ElasticsearchApplicationTests(
 
 	"context loads" {
 
-		repository.save(PostDocument(1, "title-1", "blabla-1", 1234))
-		repository.save(PostDocument(2, "title-2", "blabla-2", 5678))
-		repository.save(PostDocument(3, "title-3", "blabla-3", 1234))
-		repository.save(PostDocument(4, "title-4", "blabla-4", 5678))
+		repository.save(ArticleDocument(1, "title-1", "blabla-1", 1234))
+		repository.save(ArticleDocument(2, "title-2", "blabla-2", 5678))
+		repository.save(ArticleDocument(3, "title-3", "blabla-3", 1234))
+		repository.save(ArticleDocument(4, "title-4", "blabla-4", 5678))
 		delay(1.seconds)
 		repository.count() shouldBe 4
 

@@ -1,5 +1,6 @@
 package dev.fastcampus.payment
 
+import dev.fastcampus.payment.common.rollback
 import dev.fastcampus.payment.model.Product
 import dev.fastcampus.payment.repository.OrderRepository
 import dev.fastcampus.payment.repository.ProductRepository
@@ -25,23 +26,17 @@ class PaymentApplicationTests(
 ): StringSpec({
 
 	"context load".config(false) {
-
-		rxtx.executeAndAwait { tx ->
-//			tx.setRollbackOnly()
-
+		rxtx.rollback { tx ->
 			listOf(
 				Product("coffee", 4500),
 				Product("pillow", 12000),
 			).let {
 				productRepository.saveAll(it).last()
 			}
-
 			productRepository.findAll().toList().let {
 				logger.debug { it.joinToString("\n","\n") }
 			}
-
 		}
-
 	}
 
 })

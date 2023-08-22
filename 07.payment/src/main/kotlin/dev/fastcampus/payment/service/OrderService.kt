@@ -7,9 +7,11 @@ import dev.fastcampus.payment.repository.OrderRepository
 import dev.fastcampus.payment.repository.ProductRepository
 import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
+import org.aspectj.weaver.ast.Or
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.flow
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -33,6 +35,15 @@ class OrderService(
             product.price,
             product.localName,
         ))
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    suspend fun save(order: Order) {
+        orderRepository.save(order)
+    }
+
+    suspend fun getByPaymentOrderId(paymentOrderId: String): Order {
+        return orderRepository.findByPaymentOrderId(paymentOrderId) ?: throw NotFoundException("No order found (payment order id: $paymentOrderId)")
     }
 
     suspend fun get(id: Long): Order {

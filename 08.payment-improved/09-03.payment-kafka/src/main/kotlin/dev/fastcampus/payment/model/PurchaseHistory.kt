@@ -1,9 +1,9 @@
-package dev.fastcampus.kafka.model
+package dev.fastcampus.payment.model
 
 import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
-import dev.fastcampus.kafka.model.code.TxStatus
+import dev.fastcampus.payment.model.code.TxStatus
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Document

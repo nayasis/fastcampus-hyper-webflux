@@ -1,6 +1,7 @@
 package dev.fastcampus.payment.service
 
 import dev.fastcampus.payment.model.PurchaseHistory
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.stereotype.Service
 import reactor.kafka.sender.SenderOptions
+import reactor.kafka.sender.SenderResult
 
 @Service
 class KafkaService(
@@ -15,8 +17,8 @@ class KafkaService(
     @Value("\${payment.kafka.topic}")
     private val topic: String,
 ) {
-    fun send(history: PurchaseHistory) {
-        producer.send(topic, history)
+    suspend fun send(history: PurchaseHistory): SenderResult<Void> {
+        return producer.send(topic, history).awaitSingle()
     }
 }
 

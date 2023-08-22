@@ -1,3 +1,5 @@
+#### ORDER
+
 ### 검색어
 GET {{domain}}/order/history?userId=1&keyword=orange
 Content-Type: application/json
@@ -8,9 +10,36 @@ GET {{domain}}/order/history?userId=1&fromDate=2023-08-19&toDate=2023-08-19
 Content-Type: application/json
 
 ### 페이징
-GET {{domain}}/order/history?userId=1&page=1&limit=1
+GET {{domain}}/order/history?userId=13&page=1&limit=1
 Content-Type: application/json
 
 ### 금액
 GET {{domain}}/order/history?userId=1&fromAmount=110
+Content-Type: application/json
+
+
+#### PURCHASE
+
+### 페이징
+GET {{domain}}/purchase/history?userId=13&keyword=straw orange&size=10
+Content-Type: application/json
+
+### 페이징
+GET {{domain}}/purchase/history
+Content-Type: application/json
+
+### 페이징
+GET {{domain}}/purchase/history?keyword=straw
+Content-Type: application/json
+
+###
+GET {{domain}}/purchase/history?keyword=str&size=10
+Content-Type: application/json
+
+###
+GET {{domain}}/purchase/history?userId=13&keyword=straw orange&size=10&fromAmount=100
+Content-Type: application/json
+
+###
+GET {{domain}}/purchase/history?userId=13&keyword=straw orange&size=10&fromDate=2023-08-21
 Content-Type: application/json

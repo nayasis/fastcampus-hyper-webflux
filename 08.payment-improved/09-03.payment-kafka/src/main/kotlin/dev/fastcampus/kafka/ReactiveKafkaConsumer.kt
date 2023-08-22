@@ -1,6 +1,6 @@
 package dev.fastcampus.kafka
 
-import dev.fastcampus.kafka.model.PurchaseHistory
+import dev.fastcampus.payment.model.PurchaseHistory
 import dev.fastcampus.kafka.repository.PurchaseHistoryRepository
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.mono
@@ -23,7 +23,6 @@ import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import reactor.core.publisher.Flux
 import reactor.kafka.receiver.ReceiverOptions
 import reactor.kafka.sender.SenderOptions
-import kotlin.random.Random
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
 
@@ -37,8 +36,8 @@ fun main(args: Array<String>) {
 @EnableKafka
 class ReactiveKafkaConsumer(
 	private val redisTemplate: RedisTemplate<Any, Any>,
-	private val consumer: ReactiveKafkaConsumerTemplate<String,PurchaseHistory>,
-	private val producer: ReactiveKafkaProducerTemplate<String,PurchaseHistory>,
+	private val consumer: ReactiveKafkaConsumerTemplate<String, PurchaseHistory>,
+	private val producer: ReactiveKafkaProducerTemplate<String, PurchaseHistory>,
 	private val repository: PurchaseHistoryRepository,
 	@Value("\${payment.kafka.topic}")
 	private val topic: String,
@@ -83,9 +82,9 @@ class Config(
 ): ApplicationListener<ApplicationReadyEvent> {
 
 	@Bean
-	fun reactiveConsumer(properties: KafkaProperties): ReactiveKafkaConsumerTemplate<String,PurchaseHistory> {
+	fun reactiveConsumer(properties: KafkaProperties): ReactiveKafkaConsumerTemplate<String, PurchaseHistory> {
 		return properties.buildConsumerProperties()
-			.let { prop -> ReceiverOptions.create<String,PurchaseHistory>(prop) }
+			.let { prop -> ReceiverOptions.create<String, PurchaseHistory>(prop) }
 			.let { option -> option.subscription(listOf(topic)) }
 			.let { option ->
 				ReactiveKafkaConsumerTemplate(option)
@@ -96,7 +95,7 @@ class Config(
 	fun reactiveProducer(properties: KafkaProperties): ReactiveKafkaProducerTemplate<String, PurchaseHistory> {
 		return properties.buildProducerProperties()
 			.let { prop ->
-				SenderOptions.create<String,PurchaseHistory>(prop)
+				SenderOptions.create<String, PurchaseHistory>(prop)
 			}
 			.let { option -> ReactiveKafkaProducerTemplate(option) }
 	}

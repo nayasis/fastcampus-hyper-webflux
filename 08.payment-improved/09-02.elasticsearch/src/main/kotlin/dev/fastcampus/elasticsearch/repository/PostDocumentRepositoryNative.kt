@@ -1,6 +1,6 @@
 package dev.fastcampus.elasticsearch.repository
 
-import dev.fastcampus.elasticsearch.model.PostDocument
+import dev.fastcampus.elasticsearch.model.ArticleDocument
 import kotlinx.coroutines.reactor.awaitSingle
 import mu.KotlinLogging
 import org.springframework.data.domain.PageRequest
@@ -31,32 +31,32 @@ class PostDocumentRepositoryNative(
 
         val criteria = Criteria().apply {
             request.title?.split(" ")?.forEach {
-                and(PostDocument::title.criteria.contains(it))
+                and(ArticleDocument::title.criteria.contains(it))
             }
             request.body?.split(" ")?.forEach {
-                and(PostDocument::body.criteria.contains(it))
+                and(ArticleDocument::body.criteria.contains(it))
             }
             request.authorId?.let {
-                and(PostDocument::authorId.criteria.`in`(it))
+                and(ArticleDocument::authorId.criteria.`in`(it))
             }
             request.from?.let {
                 LocalDate.parse(it, ofPattern("yyyy-MM-dd")).atStartOfDay()
             }?.let {
-                and(PostDocument::createdAt.criteria.greaterThanEqual(it))
+                and(ArticleDocument::createdAt.criteria.greaterThanEqual(it))
             }
             request.to?.let {
                 LocalDate.parse(it, ofPattern("yyyy-MM-dd")).plusDays(1).atStartOfDay().minusNanos(1)
             }?.let {
-                and(PostDocument::createdAt.criteria.lessThanEqual(it))
+                and(ArticleDocument::createdAt.criteria.lessThanEqual(it))
             }
         }
 
         val query = CriteriaQuery(criteria, request.pageable).apply {
-            sort = PostDocument::createdAt.sort(Direction.DESC).and(PostDocument::id.sort(Direction.DESC))
+            sort = ArticleDocument::createdAt.sort(Direction.DESC).and(ArticleDocument::id.sort(Direction.DESC))
             searchAfter = request.nextKey
         }
 
-        val page = elasticsearchTemplate.searchForPage(query, PostDocument::class.java).awaitSingle()
+        val page = elasticsearchTemplate.searchForPage(query, ArticleDocument::class.java).awaitSingle()
 
         return ResSearch(
             page.content.map { it.content },
@@ -89,7 +89,7 @@ data class QrySearch(
 }
 
 data class ResSearch(
-    val posts: List<PostDocument>,
+    val posts: List<ArticleDocument>,
     val total: Long,
     val nextKey: List<Any>?,
 )

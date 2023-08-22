@@ -19,13 +19,12 @@ import reactor.netty.http.client.HttpClient
 import reactor.netty.resources.ConnectionProvider
 import java.time.Duration
 
-private val SECRET_KEY = "dGVzdF9za19PRVA1OUx5Ylo4QldrMlpMRzFaMzZHWW83cFJlOg=="
-
 private val logger = KotlinLogging.logger {}
 
 @Service
 class PaymentService(
-    private val orderRepository: OrderRepository,
+    private val orderService: OrderService,
+    private val purchaseService: PurchaseService,
     @Value("\${payment.key.toss.secret}")
     private val secretKey: String,
 ) {
@@ -33,10 +32,8 @@ class PaymentService(
     private val client = createWebClient()
 
     private fun createWebClient(): WebClient {
-
         val insecureSslContext = SslContextBuilder.forClient()
             .trustManager(InsecureTrustManagerFactory.INSTANCE).build()
-
         val provider = ConnectionProvider.builder("toss-payment")
             .maxConnections(100)
             .pendingAcquireTimeout(Duration.ofSeconds(240))
@@ -49,24 +46,29 @@ class PaymentService(
             .build()
     }
 
-
     @Transactional
     suspend fun confirm(request: PaymentSuccess): Boolean {
 
-        logger.debug { ">> request : ${request}" }
+        logger.debug { ">> request: $request" }
 
-        var order = orderRepository.findByPaymentOrderId(request.orderId)?.also {
-            if(request.amount != it.amount)
-                throw InvalidPaymentException("Invalid order amount")
-        } ?: throw InvalidPaymentException("No order found")
+        val order = orderService.getByPaymentOrderId(request.orderId).also { order ->
+                try {
+                    if(order.amount != request.amount) {
+                        order.status = TxStatus.INVALID_REQUEST
+                        throw InvalidPaymentException("Invalid order amount (origin: ${order.amount}, payment: ${request.amount}")
+                    } else {
+                        order.status = TxStatus.REQUEST_CONFIRM
+                    }
+                } finally {
+                    orderService.save(order)
+                }
+            }
 
-        logger.debug { ">> order : ${order}" }
+        logger.debug { ">> order: $order" }
 
-//        request.orderId = "hacked-id-1234"
-
-        try {
+        return try {
             val res = client.post().uri("/v1/payments/confirm")
-                .header("Authorization", "Basic $SECRET_KEY")
+                .header("Authorization", "Basic $secretKey")
                 .bodyValue(request)
                 .retrieve()
                 .awaitBody<ConfirmMessage>()
@@ -74,20 +76,22 @@ class PaymentService(
             logger.debug { ">> confirm res\n$res" }
 
             order.txid = res.paymentKey
+
             if(res.totalAmount == order.amount) {
                 order.status = TxStatus.SUCCESS
+                true
             } else {
                 order.status = TxStatus.NEED_CHECK
+                false
             }
-            return true
 
         } catch (e: Exception) {
             logger.error(e.message, e)
             order.status = TxStatus.FAIL
-            return false
+            false
         } finally {
-            // reactive code 임. 꼭 저장을 해줄 것 !
-            orderRepository.save(order)
+            order.let { orderService.save(it) }
+            purchaseService.save(order)
         }
 
     }

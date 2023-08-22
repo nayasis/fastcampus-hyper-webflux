@@ -7,8 +7,8 @@ import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
 import java.time.LocalDateTime
 
-@Document(indexName = "post")
-class PostDocument(
+@Document(indexName = "article")
+class ArticleDocument(
     @Id
     var id: Long = 0,
 

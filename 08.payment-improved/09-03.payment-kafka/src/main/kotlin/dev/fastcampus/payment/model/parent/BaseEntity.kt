@@ -1,4 +1,4 @@
-package dev.fastcampus.kafka.model.parent
+package dev.fastcampus.payment.model.parent
 
 import au.com.console.kassava.kotlinToString
 import org.springframework.data.annotation.CreatedDate

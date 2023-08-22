@@ -3,6 +3,10 @@ package dev.fastcampus.payment.model
 import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import dev.fastcampus.payment.model.code.TxStatus
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
@@ -22,8 +26,12 @@ class PurchaseHistory(
     var amount: Long = 0,
     var status: TxStatus = TxStatus.NONE,
     @Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second_millis])
+    @JsonSerialize(using = LocalDateTimeSerializer::class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer::class)
     var createdAt: LocalDateTime = LocalDateTime.now(),
     @Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second_millis])
+    @JsonSerialize(using = LocalDateTimeSerializer::class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer::class)
     var updatedAt: LocalDateTime = LocalDateTime.now(),
 ) {
 
