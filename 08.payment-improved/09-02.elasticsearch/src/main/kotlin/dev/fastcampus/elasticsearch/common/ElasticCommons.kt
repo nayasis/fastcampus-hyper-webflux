@@ -1,9 +1,12 @@
 package dev.fastcampus.elasticsearch.common
 
 import co.elastic.clients.elasticsearch._types.FieldSort
+import co.elastic.clients.elasticsearch._types.FieldValue
+import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery
+import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery
 import co.elastic.clients.json.JsonData
 import org.springframework.data.domain.Sort
 import org.springframework.data.elasticsearch.core.query.Criteria
@@ -37,8 +40,20 @@ fun FieldSort.Builder.field(field: KProperty<*>): FieldSort.Builder {
     return this.field(field.name)
 }
 
+fun MatchQuery.Builder.field(field: KProperty<*>): MatchQuery.Builder {
+    return this.field(field.name)
+}
+
 fun TermQuery.Builder.field(field: KProperty<*>): TermQuery.Builder {
     return this.field(field.name)
+}
+
+fun TermsQuery.Builder.field(field: KProperty<*>): TermsQuery.Builder {
+    return this.field(field.name)
+}
+
+fun TermsQuery.Builder.values(collection: Collection<*>): TermsQuery.Builder {
+    return this.terms { it.value(collection.map { FieldValue.of("$it") }) }
 }
 
 fun RangeQuery.Builder.field(field: KProperty<*>): RangeQuery.Builder {

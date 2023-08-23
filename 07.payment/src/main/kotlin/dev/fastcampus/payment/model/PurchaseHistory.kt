@@ -26,12 +26,8 @@ class PurchaseHistory(
     var amount: Long = 0,
     var status: TxStatus = TxStatus.NONE,
     @Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second_millis])
-    @JsonSerialize(using = LocalDateTimeSerializer::class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer::class)
     var createdAt: LocalDateTime = LocalDateTime.now(),
     @Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second_millis])
-    @JsonSerialize(using = LocalDateTimeSerializer::class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer::class)
     var updatedAt: LocalDateTime = LocalDateTime.now(),
 ) {
 

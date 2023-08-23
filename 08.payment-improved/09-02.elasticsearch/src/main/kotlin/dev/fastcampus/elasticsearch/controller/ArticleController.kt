@@ -52,4 +52,9 @@ class ArticleController(
         return repositoryNative.search(request)
     }
 
+    @GetMapping("/all/v2")
+    suspend fun getAllByNativeQuery(request: QrySearch): ResSearch {
+        return repositoryNative.searchByNativeQuery(request)
+    }
+
 }

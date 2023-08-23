@@ -1,9 +1,14 @@
 package dev.fastcampus.elasticsearch.repository
 
+import co.elastic.clients.elasticsearch._types.SortOrder
 import dev.fastcampus.elasticsearch.common.criteria
+import dev.fastcampus.elasticsearch.common.field
 import dev.fastcampus.elasticsearch.common.fields
+import dev.fastcampus.elasticsearch.common.gte
+import dev.fastcampus.elasticsearch.common.lt
 import dev.fastcampus.elasticsearch.common.sort
 import dev.fastcampus.elasticsearch.common.toLocalDateTime
+import dev.fastcampus.elasticsearch.common.values
 import dev.fastcampus.elasticsearch.model.Article
 import kotlinx.coroutines.reactor.awaitSingle
 import mu.KotlinLogging
@@ -16,8 +21,6 @@ import org.springframework.data.elasticsearch.core.query.Criteria
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery
 import org.springframework.stereotype.Component
 import java.io.Serializable
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter.ofPattern
 
 private val logger = KotlinLogging.logger {}
 
@@ -28,15 +31,19 @@ class PostDocumentRepositoryNative(
 ) {
 
     suspend fun search(request: QrySearch): ResSearch {
-
         logger.debug { ">> request : $request" }
-
         val criteria = Criteria().apply {
-            request.title?.split(" ")?.forEach {
-                and(Article::title.criteria.contains(it))
-            }
-            request.body?.split(" ")?.forEach {
-                and(Article::body.criteria.contains(it))
+//            request.title?.split(" ")?.forEach {
+//                and(Article::title.criteria.contains(it))
+//            }
+//            request.body?.split(" ")?.forEach {
+//                and(Article::body.criteria.contains(it))
+//            }
+            request.keyword?.split(" ")?.forEach {
+                and(
+                    or(Article::title.criteria.contains(it)),
+                    or(Article::body.criteria.contains(it)),
+                )
             }
             request.authorId?.let {
                 and(Article::authorId.criteria.`in`(it))
@@ -48,26 +55,21 @@ class PostDocumentRepositoryNative(
                 and(Article::createdAt.criteria.lessThanEqual(it))
             }
         }
-
         val query = CriteriaQuery(criteria, request.pageable).apply {
             sort = Article::createdAt.sort(Direction.DESC).and(Article::id.sort(Direction.DESC))
             searchAfter = request.nextKey
         }
-
-        val page = template.searchForPage(query, Article::class.java).awaitSingle()
-
-        return ResSearch(
-            page.content.map { it.content },
-            page.totalElements,
-            page.content.lastOrNull()?.sortValues,
-        )
-
+        return template.searchForPage(query, Article::class.java).awaitSingle().let { page ->
+            ResSearch(
+                page.content.map { it.content },
+                page.totalElements,
+                page.content.lastOrNull()?.sortValues,
+            )
+        }
     }
 
-    suspend fun searchNative(request: QrySearchV2): ResSearch {
-
+    suspend fun searchByNativeQuery(request: QrySearch): ResSearch {
         val query = NativeQuery.builder().withQuery{ it.bool{ it.apply {
-
             request.keyword?.trim()?.split(" ")
                 ?.let { it.toSet().map { "*$it*" }.joinToString(" ") }
                 ?.let { value ->
@@ -75,34 +77,48 @@ class PostDocumentRepositoryNative(
                         it.fields(Article::title, Article::body).query(value).analyzeWildcard(true)
                     }}
                 }
-            request.authorId?.let {
-                must{ it.
-
+            request.authorId?.ifEmpty{null}?.let {value ->
+                filter{
+                    it.terms {
+//                        it.field(Article::authorId).terms { it.value(value.map { FieldValue.of("$it") }) }
+                        it.field(Article::authorId).values(value)
+                    }
                 }
             }
-
+            request.from?.let { it.toLocalDateTime() }?.let { value ->
+                must {
+                    it.range { it.field(Article::createdAt).gte(value) }
+                }
+            }
+            request.to?.let { it.toLocalDateTime().plusDays(1) }?.let { value ->
+                must {
+                    it.range { it.field(Article::createdAt).lt(value) }
+                }
+            }
         }}}
-
+            .withPageable(request.pageable)
+            .withSearchAfter(request.nextKey)
+            .withSort {
+                it.field {
+                    it.field(Article::createdAt).order(SortOrder.Desc)
+                }
+            }.build()
+        return template.searchForPage(query, Article::class.java).awaitSingle().let { rs ->
+            ResSearch(
+                rs.content.map { it.content },
+                rs.totalElements,
+                rs.content.lastOrNull()?.sortValues,
+            )
+        }
     }
 
-}
-
-data class QrySearchV2(
-    val keyword: String? = null,
-    val authorId: Set<Long>? = null,
-    val from: String? = null,
-    val to: String? = null,
-    val size: Int = 20,
-    val nextKey: List<Any>? = null
-): Serializable {
-    val pageable: Pageable
-        get() = PageRequest.of(0, size)
 }
 
 data class QrySearch(
     val title: String? = null,
     val body: String? = null,
-    val authorId: List<Long>? = null,
+    val keyword: String? = null,
+    val authorId: Set<Long>? = null,
     val from: String? = null,
     val to: String? = null,
     val size: Int = 20,
