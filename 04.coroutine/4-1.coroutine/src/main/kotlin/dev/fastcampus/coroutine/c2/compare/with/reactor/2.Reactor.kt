@@ -23,7 +23,7 @@ private fun runSimultaneously() {
     Mono.zip(
         subA(),
         subB(),
-        subC()
+        subC(),
     ).block()
 }
 

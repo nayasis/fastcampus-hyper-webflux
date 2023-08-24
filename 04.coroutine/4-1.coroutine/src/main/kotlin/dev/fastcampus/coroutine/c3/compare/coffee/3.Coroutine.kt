@@ -63,7 +63,7 @@ private suspend fun boilMilk(): String {
 }
 
 private suspend fun foamMilk(item: String): String {
-    logger.debug { "우유 거품내기" }
+    logger.debug { "거품내기 from $item" }
     delay(1000)
     logger.debug { "> 거품 우유" }
     return "거품우유"

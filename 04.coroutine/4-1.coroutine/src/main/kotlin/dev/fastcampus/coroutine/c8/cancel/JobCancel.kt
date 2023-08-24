@@ -22,11 +22,12 @@ suspend fun queryDb() {
             delay(500.milliseconds)
         }
     } finally {
-        withContext(NonCancellable) {
+        // NonCancellable 로 호출한 scope 만, job 이 cancel 되어도 정상 처리된다.
+//        withContext(NonCancellable) {
             logger.debug { "I'm running finally" }
             delay(1.seconds)
             logger.debug { "delayed in final" }
-        }
+//        }
     }
     logger.debug { "end query" }
 }
@@ -74,7 +75,8 @@ suspend fun wait5secWhileQueryDb() {
 }
 
 suspend fun main() {
-    withTimeout(1.seconds) {
+//    withTimeout(1.seconds) {
+    withTimeout(10.seconds) {
         wait5secWhileQueryDb()
     }
 }

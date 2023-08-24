@@ -23,12 +23,15 @@ suspend fun main() {
     logger.debug { "start" }
     val dispatcher = newSingleThreadContext("single")
     coroutineScope {
-        launch(dispatcher) {
+        val t1 = launch(dispatcher) {
             subA()
         }
-        launch(dispatcher) {
+        val t2 = launch(dispatcher) {
             subA()
         }
+        delay(5000)
+        t1.cancel()
+        t2.cancel()
     }
     logger.debug { "end" }
 }
