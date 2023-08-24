@@ -37,10 +37,14 @@ class ArticleServiceTest(
             articleService.create(ReqCreate("title 1", "blabla 01", 1234)),
             articleService.create(ReqCreate("title 2", "blabla 02", 1234)),
             articleService.create(ReqCreate("title 3", "blabla 03", 1234)),
-        ).doOnNext {
-            articleService.getAll().collectList().doOnNext { assertEquals(3, it.size) }.block()
-            articleService.getAll("2").collectList().doOnNext { assertEquals(1, it.size) }.block()
-        }.rollback()
+        ).flatMap {
+            articleService.getAll().collectList().doOnNext {
+                assertEquals(3, it.size)
+            }
+        }.flatMap {
+            articleService.getAll("2").collectList().doOnNext { assertEquals(1, it.size) }
+//        }.block()
+        }.rollback().block()
     }
 
     @Test
@@ -51,6 +55,7 @@ class ArticleServiceTest(
             assertEquals("blabla 01", it.body)
             assertEquals(1234, it.authorId)
         }.rollback().block()
+//        }.block()
         assertThrows<NotFoundException> {
             articleService.get(-1).block()
         }
@@ -64,6 +69,7 @@ class ArticleServiceTest(
             assertEquals(request.body, it.body)
             assertEquals(request.authorId, it.authorId)
         }.rollback().block()
+//        }.block()
     }
 
     @Test
@@ -92,6 +98,7 @@ class ArticleServiceTest(
                 }
             }
         }.rollback().block()
+//        }.block()
     }
 
     @Test
@@ -111,6 +118,7 @@ class ArticleServiceTest(
             assertEquals(prevSize, currSize)
             Mono.just(true)
         }.rollback().block()
+//        }.block()
     }
 
 }

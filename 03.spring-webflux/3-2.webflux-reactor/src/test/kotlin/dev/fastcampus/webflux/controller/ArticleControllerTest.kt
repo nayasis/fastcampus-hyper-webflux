@@ -23,7 +23,7 @@ private val logger = KotlinLogging.logger {}
 @SpringBootTest
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-@DirtiesContext
+//@DirtiesContext
 class ArticleControllerTest(
     @Autowired private val context: ApplicationContext,
 ) {

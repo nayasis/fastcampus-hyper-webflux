@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: stress
+    active: local
 ---
 spring:
   application:
@@ -9,10 +9,14 @@ spring:
     ansi:
       enabled: always
   r2dbc:
-    url: r2dbc:pool:h2:mem://localhost/test
+#    url: r2dbc:pool:h2:mem://localhost/test
+#    url: r2dbc:pool:h2:file:~/test
+#    url: r2dbc:pool:h2:file://~/test
+    url: r2dbc:pool:h2:file:///~/test
   sql:
     init:
-      mode: embedded
+#      mode: embedded
+      mode: always
       schema-locations: classpath:db-init/schema.sql
 server:
   error:
@@ -26,7 +30,7 @@ spring:
       on-profile: local
   sql:
     init:
-      mode: embedded
+      mode: always
       data-locations: classpath:db-init/data.sql
 logging:
   level:
@@ -37,6 +41,9 @@ spring:
   config:
     activate:
       on-profile: test
+  r2dbc:
+    url: r2dbc:pool:h2:mem://localhost/test
+#    url: r2dbc:pool:h2:file:///~/test
 logging:
   level:
     org.springframework.r2dbc.core: debug
