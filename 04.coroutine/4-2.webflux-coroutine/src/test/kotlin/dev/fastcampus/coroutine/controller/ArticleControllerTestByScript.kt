@@ -1,14 +1,9 @@
 package dev.fastcampus.coroutine.controller
 
-import dev.fastcampus.coroutine.model.Article
-import dev.fastcampus.coroutine.service.ReqCreate
-import dev.fastcampus.coroutine.service.ReqUpdate
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.r2dbc.connection.init.ScriptUtils
