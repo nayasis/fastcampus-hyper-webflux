@@ -46,5 +46,9 @@ fun main() {
         println("ans2 : $it")
     }.subscribe()
 
+//    subA().doOnNext { println("request: $it") }
+//        .flatMap { subB(Mono.just(it)) }.doOnNext { println("ans1: $it") }
+//        .flatMap { subC(Mono.just(it)) }.doOnNext { println("ans2: $it") }
+//        .subscribe()
 
 }

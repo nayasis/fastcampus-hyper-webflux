@@ -21,15 +21,15 @@ fun main() {
 
 private fun subA(): Mono<Unit> {
     return Mono.fromCallable { logger.debug { "start sub A" } }
-        .delayElement(Duration.ofSeconds(1))
-        .publishOn(singleThread)
+        .delayElement(Duration.ofSeconds(1), singleThread)
+//        .publishOn(singleThread)
         .doOnNext { logger.debug { "end sub A" } }
 }
 
 private fun subB(): Mono<Unit> {
     return Mono.fromCallable { logger.debug { "start sub B" } }
-        .delayElement(Duration.ofSeconds(1))
-        .publishOn(singleThread)
+        .delayElement(Duration.ofSeconds(1), singleThread)
+//        .publishOn(singleThread)
         .doOnNext { logger.debug { "end sub B" } }
 }
 
