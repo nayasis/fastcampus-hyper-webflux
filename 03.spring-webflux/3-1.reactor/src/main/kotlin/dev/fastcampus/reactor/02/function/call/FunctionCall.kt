@@ -16,35 +16,19 @@ fun subC(mono: Mono<Int>): Mono<Int> {
 
 fun main() {
 
-//    val request = subA()
-//
-//    println("request : ${request.block()}")
-//
-//    val ans1 = subB(request)
-//
-//    println("ans1 : ${ans1.block()}")
-//
-//    val ans2 = subC(ans1)
-//
-////    println("result : $ans2")
-//
-//    println("ans2 : ${ans2.block()}")
-//
-//    ans2.subscribe{
-//        println("final : $it")
-//    }
+    val request = getRequest().doOnNext { logger.debug { ">> request: ${it}" } }
 
-    subC(
-        subB(
-            subA().doOnNext{
-                println("request : $it")
-            }
-        ).doOnNext {
-            println("ans1 : $it")
-        }
-    ).doOnNext {
-        println("ans2 : $it")
-    }.subscribe()
+//    logger.debug { ">> request: ${request.block()}" }
+
+    val resA = subA(request).doOnNext{ logger.debug { ">> resA: ${it}" } }
+
+//    logger.debug { ">> resA: ${resA.block()}" }
+
+    val resB = subB(resA).doOnNext{ logger.debug { ">> resB: ${it}" } }
+
+//    logger.debug { ">> resB: ${resB.block()}" }
+
+    resB.subscribe()
 
 //    subA().doOnNext { println("request: $it") }
 //        .flatMap { subB(Mono.just(it)) }.doOnNext { println("ans1: $it") }
