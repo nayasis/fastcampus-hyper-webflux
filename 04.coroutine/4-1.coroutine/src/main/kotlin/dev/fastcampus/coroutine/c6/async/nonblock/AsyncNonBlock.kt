@@ -13,6 +13,7 @@ import java.util.concurrent.Executors
 
 private val logger = KotlinLogging.logger {}
 
+val singleDispatcher = newSingleThreadContext("single")
 val simpleDispatcher = Dispatchers.Default
 val blockingDispatcher = Dispatchers.IO
 val customDispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
@@ -21,31 +22,33 @@ val anotherCustomDispatcher = newFixedThreadPoolContext(4, "another")
 
 suspend fun main() {
     logger.debug { "start" }
-    val dispatcher = newSingleThreadContext("single")
     coroutineScope {
-        val t1 = launch(dispatcher) {
-            subA()
+        val taskHard = launch(singleDispatcher) {
+            workHard()
         }
-        val t2 = launch(dispatcher) {
-            subA()
+        val taskEasy = launch(singleDispatcher) {
+            workEasy()
         }
-        delay(5000)
-        t1.cancel()
-        t2.cancel()
+        taskEasy.join()
+        delay(2000)
+        taskHard.cancel()
     }
     logger.debug { "end" }
 }
 
-private suspend fun subA() {
-    logger.debug { "start" }
-    workHard()
-    logger.debug { "end" }
+private suspend fun workEasy() {
+    logger.debug { "start easy work" }
+    delay(1000)
+    logger.debug { "end easy work" }
 }
 
 private suspend fun workHard() {
-    logger.debug { "start" }
-    while (true) {
-        delay(100)
+    logger.debug { "start hard work" }
+    try {
+        while (true) {
+            delay(100)
+        }
+    } finally {
+        logger.debug { "end hard work" }
     }
-    logger.debug { "end" }
 }

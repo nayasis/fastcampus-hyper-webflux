@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: stress
+    active: local
 ---
 spring:
   application:
