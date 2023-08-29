@@ -2,9 +2,16 @@ package dev.fastcampus.coroutine.service
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.subscribe
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
@@ -24,6 +31,7 @@ import org.springframework.data.redis.connection.RedisGeoCommands
 import org.springframework.data.redis.connection.RedisGeoCommands.*
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.test.context.ActiveProfiles
+import reactor.kotlin.core.publisher.toFlux
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
@@ -143,5 +151,29 @@ class RedisTemplateTest(
 
     }
 
+    "pub/sub" {
+
+        
+        // wildcard channel 명 검색은 미지원
+//        redisTemplate.listenToChannel("test-channel-1").doOnNext {
+//            logger.debug { ">> receiver 1 : $it" }
+//        }.subscribe()
+//
+//        redisTemplate.listenToChannel("test-channel-1").doOnNext {
+//            logger.debug { ">> receiver 2 : $it" }
+//        }.subscribe()
+
+        redisTemplate.listenToChannel("test-channel-1").asFlow().onEach {
+            logger.debug { ">> receiver : $it" }
+        }.launchIn(CoroutineScope(Dispatchers.Default))
+
+        repeat(10) { i ->
+            val message = "test message : $i"
+            logger.debug { ">> send : $message" }
+            redisTemplate.convertAndSend("test-channel-1", message).awaitSingle()
+            delay(1000)
+        }
+
+    }
 
 })

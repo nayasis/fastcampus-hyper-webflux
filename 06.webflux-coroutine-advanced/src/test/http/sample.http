@@ -98,10 +98,15 @@ Content-Type: application/json
 GET {{domain}}/external/world
 Content-Type: application/json
 
-### cirbuit breaker
+### circuit breaker
 GET {{domain}}/circuit?fail=true&trace
 Content-Type: application/json
 
-### cirbuit breaker
+### circuit breaker
 GET http://localhost:8091/fail?fail=true&trace
 Content-Type: application/json
+
+### publish message to redis
+POST {{domain}}/send/sample-topic/test_message
+Content-Type: application/json
+
