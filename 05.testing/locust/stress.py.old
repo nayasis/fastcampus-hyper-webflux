@@ -1,4 +1,4 @@
-from locust import FastHttpUser, task, between, TaskSet
+from locust import HttpUser, task, between, TaskSet
 from locust import events
 from locust.runners import MasterRunner, WorkerRunner
 
@@ -17,7 +17,7 @@ class UserBehavior(TaskSet):
     #     self.client.get(f'/stress/delay')
 
 
-class LocustUser(FastHttpUser):
+class LocustUser(HttpUser):
     host = "http://localhost:8080"
     tasks = [ UserBehavior ]
     min_wait = 5000
