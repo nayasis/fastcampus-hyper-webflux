@@ -72,7 +72,7 @@ Content-Type: application/json
 });%}
 
 ### get all by condition
-GET {{domain}}/article/all?title=2
+GET {{domain}}/article/all?title=matched
 Content-Type: application/json
 
 ### get

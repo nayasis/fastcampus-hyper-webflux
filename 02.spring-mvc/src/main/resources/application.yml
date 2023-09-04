@@ -44,6 +44,10 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
     dev.fastcampus: debug
+biz:
+  api:
+#    external: http://localhost:8091
+    external: http://10.202.96.73:8091
 ---
 spring:
   config:

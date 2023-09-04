@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.controller
+package dev.fastcampus.webflux.controller
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
@@ -8,8 +8,8 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.awaitBody
 import reactor.core.publisher.Mono
+import reactor.netty.http.client.HttpClient
 import reactor.netty.resources.ConnectionProvider
 import java.time.Duration
 
@@ -24,15 +24,14 @@ class StressController(
     private val client = createWebClient()
 
     private fun createWebClient(): WebClient {
-        logger.debug { ">> biz.api.external : ${external}" }
         val provider = ConnectionProvider.builder("stress")
             .maxConnections(20_000)
             .pendingAcquireTimeout(Duration.ofSeconds(120))
             .build()
-        val connector = ReactorClientHttpConnector(reactor.netty.http.client.HttpClient.create(provider))
+        val connector = ReactorClientHttpConnector(HttpClient.create(provider))
         return WebClient.builder()
-            .baseUrl(external)
 //            .baseUrl("http://localhost:8091")
+            .baseUrl(external)
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .clientConnector(connector)
             .build()
@@ -41,9 +40,9 @@ class StressController(
     private val DELAY_SEC = 5
 
     @GetMapping("/stress/delay")
-    suspend fun delay(): String {
+    fun delay(): Mono<String> {
         logger.debug { "requested" }
-        return client.get().uri("/delay/${DELAY_SEC * 1000}").retrieve().awaitBody()
+        return client.get().uri("/delay/${DELAY_SEC * 1000}").retrieve().bodyToMono(String::class.java)
     }
 
 }

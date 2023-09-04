@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: stress
 ---
 spring:
   application:
@@ -23,6 +23,10 @@ server:
     include-exception: true
     include-message: always
     include-stacktrace: always
+biz:
+  api:
+    #    external: http://localhost:8091
+    external: http://10.202.96.73:8091
 ---
 spring:
   config:

@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: stress
 ---
 spring:
   application:
@@ -31,6 +31,10 @@ logging:
 #    org.springframework.r2dbc.core: debug
 #    org.springframework.r2dbc.connection.init.ScriptUtils: debug
     dev.fastcampus: debug
+biz:
+  api:
+    #    external: http://localhost:8091
+    external: http://10.202.96.73:8091
 ---
 spring:
   config:
