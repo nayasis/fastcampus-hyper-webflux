@@ -3,12 +3,12 @@ from locust import events
 from locust.runners import MasterRunner, WorkerRunner
 
 class UserBehavior(TaskSet):
-    @task
-    def get(self):
-        self.client.get(f'/article/1')
     # @task
-    # def getAll(self):
-    #     self.client.get(f'/article/all?title=matched')
+    # def get(self):
+    #     self.client.get(f'/article/1')
+    @task
+    def getAll(self):
+        self.client.get(f'/article/all?title=matched')
     # @task
     # def delay(self):
     #     self.client.get(f'/stress/delay')

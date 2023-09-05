@@ -17,16 +17,14 @@ class StressController(
     private val external: String,
 ) {
 
+    private val restTemplate = RestTemplate()
+
     private val DELAY_SEC = 5
 
     @GetMapping("/stress/delay")
     fun delay(): String {
-
-//        sleep(5000L)
-//        return "delayed"
-
         logger.debug { "requested" }
-        return RestTemplate().getForObject("${external}/delay/${DELAY_SEC * 1000}", HttpHeaders().apply {
+        return restTemplate.getForObject("${external}/delay/${DELAY_SEC * 1000}", HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
         })
     }

@@ -3,5 +3,9 @@ services:
   spring-coroutine:
     container_name: spring-coroutine
     image: spring-coroutine:0.0.1-SNAPSHOT
-    ports:
+    ports: # host:container
       - "8080:8080"
+    environment:
+      - spring.r2dbc.url=r2dbc:pool:mariadb://10.202.96.73:3306/sample
+      - api.external=http://10.202.96.73:8091
+      - USE_PROFILE=stress
