@@ -35,9 +35,6 @@ class StressController {
 
     @GetMapping("/stress/delay")
     suspend fun delay(): Mono<String> {
-//        kotlinx.coroutines.delay(5000L)
-//        return Mono.just("delayed")
-
         logger.debug { "requested" }
         return client.get().uri("/delay/${DELAY_SEC * 1000}").retrieve().bodyToMono(String::class.java)
     }

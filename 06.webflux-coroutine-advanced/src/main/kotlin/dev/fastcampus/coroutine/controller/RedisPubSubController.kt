@@ -1,4 +1,4 @@
-package dev.fastcampus.coroutine.redis.pubsub
+package dev.fastcampus.coroutine.controller
 
 import kotlinx.coroutines.reactor.awaitSingle
 import mu.KotlinLogging
@@ -13,7 +13,7 @@ private val logger = KotlinLogging.logger {}
 
 @RestController
 class RedisPubSubController(
-    private val redisTemplate: ReactiveRedisTemplate<Any,Any>
+    private val redisTemplate: ReactiveRedisTemplate<Any, Any>
 ): ApplicationListener<ApplicationReadyEvent> {
 
     private val TOPIC_SAMPLE = "sample-topic"
