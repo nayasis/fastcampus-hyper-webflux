@@ -1,6 +1,7 @@
 package dev.fastcampus.webflux.controller
 
 import dev.fastcampus.webflux.model.Article
+import dev.fastcampus.webflux.repository.ArticleRepository
 import dev.fastcampus.webflux.service.ReqCreate
 import dev.fastcampus.webflux.service.ReqUpdate
 import mu.KotlinLogging
@@ -26,6 +27,7 @@ private val logger = KotlinLogging.logger {}
 //@DirtiesContext
 class ArticleControllerTest(
     @Autowired private val context: ApplicationContext,
+    @Autowired private val repository: ArticleRepository,
 ) {
 
     val client = WebTestClient.bindToApplicationContext(context).build()
@@ -112,8 +114,9 @@ class ArticleControllerTest(
 
     }
 
-    private fun getArticleSize(): Int {
-        val ref = object: ParameterizedTypeReference<ArrayList<Article>>(){}
-        return client.get().uri("/article/all").accept(APPLICATION_JSON).exchange().expectBody(ref).returnResult().responseBody?.size ?: 0
+    private fun getArticleSize(): Long {
+//        val ref = object: ParameterizedTypeReference<ArrayList<Article>>(){}
+//        return client.get().uri("/article/all").accept(APPLICATION_JSON).exchange().expectBody(ref).returnResult().responseBody?.size ?: 0
+        return repository.count().block() ?: 0
     }
 }

@@ -9,9 +9,6 @@ import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.core.io.ClassPathResource
-import org.springframework.r2dbc.connection.init.ScriptUtils
-import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.ReactiveTransaction
 import org.springframework.transaction.reactive.TransactionalOperator
@@ -26,8 +23,6 @@ class ArticleServiceTest(
     @Autowired private val repository: ArticleRepository,
     @Autowired private val rxtx: TransactionalOperator,
 ): StringSpec({
-
-    suspend fun getArticleSize() = articleService.getAll().toList().size
 
     "get all" {
 
@@ -79,11 +74,11 @@ class ArticleServiceTest(
     }
 
     "create fail and rollback" {
-        val prevSize = getArticleSize()
+        val prevSize = repository.count()
         shouldThrow<Exception> {
             articleService.create(ReqCreate("error", "blabla 04", 1234))
         }
-        getArticleSize() shouldBe prevSize
+        repository.count() shouldBe prevSize
     }
 
     "update" {
@@ -97,11 +92,11 @@ class ArticleServiceTest(
 
     "delete" {
         rxtx.rollback {
-            val prevSize = getArticleSize()
+            val prevSize = repository.count()
             val created = articleService.create(ReqCreate("title 4", "blabla 04", 1234))
-            getArticleSize() shouldBe prevSize + 1
+            repository.count() shouldBe prevSize + 1
             articleService.delete(created.id)
-            getArticleSize() shouldBe prevSize
+            repository.count() shouldBe prevSize
         }
     }
 

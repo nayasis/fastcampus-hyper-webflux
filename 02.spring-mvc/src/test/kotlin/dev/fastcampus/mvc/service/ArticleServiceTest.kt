@@ -1,5 +1,6 @@
 package dev.fastcampus.mvc.service
 
+import dev.fastcampus.mvc.repository.ArticleRepository
 import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -21,6 +22,7 @@ private val logger = KotlinLogging.logger {}
 @ExtendWith(MockitoExtension::class)
 class ArticleServiceTest(
     @Autowired private val articleService: ArticleService,
+    @Autowired private val repository: ArticleRepository,
 //    @Mock private val articleService: ArticleService,
 ) {
 
@@ -34,8 +36,9 @@ class ArticleServiceTest(
 //        Mockito.`when`(articleService.getAll("2")).thenReturn(listOf(
 //            Article(2,"title2","body2",1234),
 //        ))
-        assertEquals(3, articleService.getAll().size)
+        assertEquals(3, repository.count())
         assertEquals(1, articleService.getAll("2").size)
+        assertEquals(1, repository.countByTitleContains("2"))
     }
 
     @Test
@@ -63,18 +66,18 @@ class ArticleServiceTest(
     @Test
     fun update() {
         val newAuthorId = 999_999L
-        articleService.update(1, ReqCreate(authorId = newAuthorId)).let {
+        articleService.update(1, ReqUpdate(authorId = newAuthorId)).let {
             assertEquals(newAuthorId, it.authorId)
         }
     }
 
     @Test
     fun delete() {
-        val prevSize = articleService.getAll().size
+        val prevSize = repository.count()
         val new = articleService.create(ReqCreate("title 4", "blabla 04", 1234))
         assertEquals(prevSize + 1, articleService.getAll().size)
         articleService.delete(new.id)
-        assertEquals(prevSize, articleService.getAll().size)
+        assertEquals(prevSize, repository.count())
     }
 
 }

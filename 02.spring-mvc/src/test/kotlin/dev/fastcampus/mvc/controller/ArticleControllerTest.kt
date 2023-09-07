@@ -1,5 +1,6 @@
 package dev.fastcampus.mvc.controller
 
+import dev.fastcampus.mvc.repository.ArticleRepository
 import dev.fastcampus.mvc.service.ArticleService
 import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -28,6 +29,7 @@ private val logger = KotlinLogging.logger {}
 class ArticleControllerTest(
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val articleService: ArticleService,
+    @Autowired private val repository: ArticleRepository,
 ) {
 
     @Test
@@ -106,12 +108,12 @@ class ArticleControllerTest(
         }.andExpect {
             status { isOk() }
         }
-        assertEquals(prevSize + 1, articleService.getAll().size)
+        assertEquals(prevSize + 1, repository.count())
         mockMvc.delete("/article/1") {
             contentType = APPLICATION_JSON
         }.andExpect {
             status { isOk() }
         }
-        assertEquals(prevSize, articleService.getAll().size)
+        assertEquals(prevSize, repository.count())
     }
 }

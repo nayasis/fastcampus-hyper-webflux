@@ -1,6 +1,7 @@
 package dev.fastcampus.coroutine.controller
 
 import dev.fastcampus.coroutine.model.Article
+import dev.fastcampus.coroutine.repository.ArticleRepository
 import dev.fastcampus.coroutine.service.ReqCreate
 import dev.fastcampus.coroutine.service.ReqUpdate
 import io.kotest.core.spec.style.StringSpec
@@ -8,6 +9,7 @@ import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
+import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -16,6 +18,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @ActiveProfiles("test")
 class ArticleControllerTest(
     @Autowired private val context: ApplicationContext,
+    @Autowired private val repository: ArticleRepository,
 ): StringSpec({
 
     val client = WebTestClient.bindToApplicationContext(context).build()
@@ -85,13 +88,14 @@ class ArticleControllerTest(
     }
 
     "delete" {
-        val prevSize = getArticleSize()
+        val prevSize = repository.count()
         val res = client.post().uri("/article").accept(APPLICATION_JSON)
             .bodyValue(ReqCreate("test", "it is r2dbc demo", 1234)).exchange()
             .expectBody(Article::class.java).returnResult().responseBody!!
-        getArticleSize() shouldBe prevSize + 1
+
+        repository.count() shouldBe prevSize + 1
         client.delete().uri("/article/${res.id}").exchange().expectStatus().isOk
-        getArticleSize() shouldBe prevSize
+        repository.count() shouldBe prevSize
     }
 
 })

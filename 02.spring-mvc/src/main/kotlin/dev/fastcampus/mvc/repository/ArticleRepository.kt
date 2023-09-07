@@ -9,4 +9,6 @@ interface ArticleRepository: JpaRepository<Article, Long> {
 
     fun findAllByTitleContains(title: String): List<Article>
 
+    fun countByTitleContains(title: String): Long
+
 }

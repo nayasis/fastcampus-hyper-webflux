@@ -1,6 +1,7 @@
 package dev.fastcampus.webflux.service
 
 import dev.fastcampus.webflux.exception.NotFoundException
+import dev.fastcampus.webflux.repository.ArticleRepository
 import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
@@ -18,6 +19,7 @@ private val logger = KotlinLogging.logger{}
 @ActiveProfiles("test")
 class ArticleServiceTest(
     @Autowired private val articleService: ArticleService,
+    @Autowired private val repository: ArticleRepository,
 ) {
 
 //    @Test
@@ -27,7 +29,7 @@ class ArticleServiceTest(
 //        articleService.create(ReqCreate("title 2", "blabla 02", 1234)).block()
 //        articleService.create(ReqCreate("title 3", "blabla 03", 1234)).block()
 //
-//        articleService.getAll().collectList().doOnNext { assertEquals(3, it.size) }.block()
+//        repository.count().doOnNext { assertEquals(3, it) }.block()
 //        articleService.getAll("2").collectList().doOnNext { assertEquals(1, it.size) }.block()
 //    }
 
@@ -38,12 +40,11 @@ class ArticleServiceTest(
             articleService.create(ReqCreate("title 2", "blabla 02", 1234)),
             articleService.create(ReqCreate("title 3", "blabla 03", 1234)),
         ).flatMap {
-            articleService.getAll().collectList().doOnNext {
-                assertEquals(3, it.size)
+            repository.count().doOnNext {
+                assertEquals(3, it)
             }
         }.flatMap {
             articleService.getAll("2").collectList().doOnNext { assertEquals(1, it.size) }
-//        }.block()
         }.rollback().block()
     }
 
@@ -82,43 +83,41 @@ class ArticleServiceTest(
         assertEquals(prevSize, getArticleSize())
     }
 
-    private fun getArticleSize(): Int = articleService.getAll().collectList().map { it.size }.block() ?: 0
+    private fun getArticleSize(): Long = repository.count().block() ?: 0
 
     @Test
     fun deleteInRollback() {
-        articleService.getAll().collectList().map { it.size }.flatMap { prevSize ->
+        repository.count().flatMap { prevSize ->
             articleService.create(ReqCreate("title 4", "blabla 04", 1234)).flatMap { new ->
-                articleService.getAll().collectList().map { it.size }.flatMap {
+                repository.count().flatMap {
                     assertEquals(prevSize + 1, it)
                     articleService.delete(new.id).thenReturn(true).flatMap {
-                        articleService.getAll().collectList().map { it.size }.doOnNext {
+                        repository.count().doOnNext {
                             assertEquals(prevSize, it)
                         }
                     }
                 }
             }
         }.rollback().block()
-//        }.block()
     }
 
     @Test
     fun deleteInRollbackInFunctional() {
-        articleService.getAll().collectList().map { it.size }.flatMap { prevSize ->
+        repository.count().flatMap { prevSize ->
             articleService.create(ReqCreate("title 4", "blabla 04", 1234))
-                .zipWhen { articleService.getAll().collectList().map { it.size } }
+                .zipWhen { repository.count() }
                 .flatMap { Mono.zip(Mono.just(prevSize), Mono.just(it.t1), Mono.just(it.t2)) }
         }.flatMap {
             val (prevSize, created, currSize) = Triple(it.t1, it.t2, it.t3)
             assertEquals(prevSize + 1, currSize)
             articleService.delete(created.id).thenReturn(true)
-                .zipWhen { articleService.getAll().collectList().map { it.size } }
+                .zipWhen { repository.count() }
                 .flatMap { Mono.zip(Mono.just(prevSize), Mono.just(it.t2)) }
         }.flatMap {
             val (prevSize, currSize) = it.t1 to it.t2
             assertEquals(prevSize, currSize)
             Mono.just(true)
         }.rollback().block()
-//        }.block()
     }
 
 }
