@@ -16,3 +16,6 @@
 05.testing/useless-webflux/gradle/wrapper/
 05.testing/useless-mvc/gradle/wrapper/
 05.testing/locust-docker/__pycache__/
+05.testing/dummy-data/dummy-data/.gradle/
+05.testing/dummy-data/dummy-data/build/
+05.testing/dummy-data/dummy-data/gradle/wrapper/
