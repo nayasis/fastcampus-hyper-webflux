@@ -1,0 +1,11 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  jpa:
+    hibernate:
+      ddl-auto: none
+  sql:
+    init:
+      mode: embedded
+      schema-locations: classpath:db-init/test.sql

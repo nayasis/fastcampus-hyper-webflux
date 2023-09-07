@@ -1,0 +1,75 @@
+spring:
+  profiles:
+    active: stress
+---
+spring:
+  application:
+    name: spring-coroutine
+  output:
+    ansi:
+      enabled: always
+  r2dbc:
+    url: r2dbc:pool:mariadb://localhost:3306/sample
+    username: user
+    password: 1234
+  sql:
+    init:
+      mode: never
+      schema-locations: classpath:db-init/schema.sql
+server:
+  shutdown: graceful
+  compression:
+    enabled: true
+  port: 8080
+  error:
+    include-message: always
+    include-exception: true
+    include-stacktrace: on_param
+logging:
+  level:
+#    root: debug
+#    org.springframework.r2dbc.core: debug
+#    org.springframework.r2dbc.connection.init.ScriptUtils: debug
+    dev.fastcampus: debug
+biz:
+  api:
+    #    external: http://localhost:8091
+    external: http://10.202.96.73:8091
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+logging:
+  level:
+    #    org.springframework.r2dbc.core: debug
+    dev.fastcampus: debug
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  r2dbc:
+    url: r2dbc:pool:h2:mem://localhost/sample
+  sql:
+    init:
+      mode: embedded
+---
+spring:
+  config:
+    activate:
+      on-profile: stress
+  r2dbc:
+    url: r2dbc:pool:mariadb://10.202.96.73:3306/sample
+    username: user
+    password: 1234
+  data:
+    redis:
+      host: 10.202.96.73
+      port: 6379
+  sql:
+    init:
+      mode: never
+logging:
+  level:
+    dev.fastcampus: debug

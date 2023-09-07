@@ -1,0 +1,74 @@
+spring:
+  profiles:
+    active: stress
+---
+spring:
+  application:
+    name: spring-webflux
+  output:
+    ansi:
+      enabled: always
+  r2dbc:
+#    url: r2dbc:pool:h2:mem://localhost/test
+#    url: r2dbc:pool:h2:file:~/test
+#    url: r2dbc:pool:h2:file://~/test
+    url: r2dbc:pool:h2:file:///~/test
+  sql:
+    init:
+#      mode: embedded
+      mode: always
+      schema-locations: classpath:db-init/schema.sql
+server:
+  error:
+    include-exception: true
+    include-message: always
+    include-stacktrace: always
+biz:
+  api:
+    #    external: http://localhost:8091
+    external: http://10.202.96.73:8091
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:db-init/data.sql
+logging:
+  level:
+#    org.springframework.r2dbc.core: debug
+    dev.fastcampus: debug
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  r2dbc:
+    url: r2dbc:pool:h2:mem://localhost/test
+#    url: r2dbc:pool:h2:file:///~/test
+logging:
+  level:
+    org.springframework.r2dbc.core: debug
+    org.springframework.r2dbc.connection.init.ScriptUtils: debug
+    dev.fastcampus: debug
+---
+spring:
+  config:
+    activate:
+      on-profile: stress
+  r2dbc:
+    url: r2dbc:pool:mariadb://10.202.96.73:3306/sample
+    username: user
+    password: 1234
+  data:
+    redis:
+      host: 10.202.96.73
+      port: 6379
+  sql:
+    init:
+      mode: never
+logging:
+  level:
+    dev.fastcampus: debug

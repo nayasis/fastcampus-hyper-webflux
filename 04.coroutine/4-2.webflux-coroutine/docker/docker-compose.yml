@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  spring-coroutine:
+    container_name: webflux-coroutine
+    image: webflux-coroutine:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"

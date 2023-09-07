@@ -8,24 +8,45 @@ plugins {
 	kotlin("plugin.jpa") version "1.8.21"
 }
 
-group = "dev.study.mvc"
+group = "dev.fastcampus"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
+//allOpen {
+//	annotation("javax.persistence.Entity")
+//	annotation("javax.persistence.MappedSuperclass")
+//	annotation("javax.persistence.Embeddable")
+//}
+//
+//noArg {
+//	annotation("javax.persistence.Entity")
+//	annotation("javax.persistence.MappedSuperclass")
+//	annotation("javax.persistence.Embeddable")
+//	annotation("com.github.nayasis.kotlin.basica.annotation.NoArg")
+//	invokeInitializers = true
+//}
+
+
 repositories {
 	mavenCentral()
+	gradlePluginPortal()
+	maven {
+		url = uri("https://raw.githubusercontent.com/graalvm/native-build-tools/snapshots")
+	}
 }
 
 dependencies {
 
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("io.github.microutils:kotlin-logging:3.0.5")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-//	runtimeOnly("com.h2database:h2")
+	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+//	runtimeOnly("com.mysql:mysql-connector-j")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

@@ -1,0 +1,68 @@
+### get all
+GET {{domain}}/article/all
+Content-Type: application/json
+
+### save
+POST {{domain}}/article
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "test 1",
+  "body": "my contents",
+  "authorId": 1234
+}
+
+### save (update)
+POST {{domain}}/article
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "test 1 - updated",
+  "body": "my contents",
+  "authorId": 9999,
+  "createdAt": "2023-08-23T14:32:57.113"
+}
+
+### save all
+POST {{domain}}/article/all
+Content-Type: application/json
+
+[{
+  "id": 1,
+  "title": "test 1",
+  "body": "my contents",
+  "authorId": 1234
+},{
+  "id": 2,
+  "title": "test 2",
+  "body": "blabla",
+  "authorId": 1234
+},{
+  "id": 3,
+  "title": "test 3",
+  "body": "chrono trigger",
+  "authorId": 947372
+}]
+
+### get all (conditional)
+GET {{domain}}/article/all?title=1&from=2023-08-01&authorId=1&authorId=2&authorId=9999
+Content-Type: application/json
+
+### get all (conditional)
+GET {{domain}}/article/all?keyword=my&from=2023-08-01&authorId=1&authorId=2&authorId=9999
+Content-Type: application/json
+
+### get all (conditional)
+GET {{domain}}/article/all?keyword=my&from=2023-08-01&authorId=1&authorId=2&authorId=9999
+Content-Type: application/json
+
+### get all v2 (conditional)
+GET {{domain}}/article/all/v2?keyword=1&from=2023-08-01&authorId=1&authorId=2&authorId=9999
+Content-Type: application/json
+
+### get all v2 (conditional)
+GET {{domain}}/article/all/v2?keyword=my&from=2023-08-01&authorId=1&authorId=2&authorId=9999
+Content-Type: application/json
+
