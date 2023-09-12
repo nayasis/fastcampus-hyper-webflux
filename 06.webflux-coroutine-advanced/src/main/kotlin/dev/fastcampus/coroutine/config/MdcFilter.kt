@@ -17,7 +17,7 @@ private val logger = KotlinLogging.logger {}
 @Order(1)
 class MdcFilter: WebFilter {
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
-        val uuid = exchange.request.headers["x-txid"]?.getOrNull(0) ?: "${UUID.randomUUID()}".replace("-","")
+        val uuid = exchange.request.headers["x-txid"]?.firstOrNull() ?: "${UUID.randomUUID()}".replace("-","")
         MDC.put("txid", uuid)
         logger.info{ exchange.request.let { request ->
             "uri: [${request.method}] ${request.path}, ip: ${request.remoteAddress}${
