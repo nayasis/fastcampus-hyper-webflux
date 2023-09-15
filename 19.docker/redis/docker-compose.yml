@@ -1,8 +1,22 @@
-version: "3.2"
+version: "3.8"
 services:
   redis:
     image: redis
     container_name: redis
+    command: redis-server --appendonly no --databases 1 --maxmemory 2G --maxmemory-policy allkeys-lru
     restart: unless-stopped
     ports:
       - "6379:6379"
+
+# maxmemory-policy
+#
+#   메모리가 maxmemory 설정을 초과할 경우 데이터를 지우는 정책
+# 
+# - volatile-lru    : (기본값) 만료시각이 설정된 key 중에서 LRU algorithm 으로 오래된 key를 골라서 삭제
+# - allkeys-lru     : 만료시각이 설정되지 않은 key라 하더라도, LRU algorithm 으로 오래된 key를 골라서 삭제
+# - volatile-random : 만료시각이 설정된 key 중에서 랜덤하게 key 를 골라 삭제
+# - allkeys-random  : 랜덤하게 key 를 골라 삭제
+# - volatile-ttl    : 만료시각이 설정된 key 중에서 만료시각이 가장 가까운 key 를 골라 삭제
+# - noeviction      : 어떤 key 도 삭제하지 않고 에러처리 (error on write operations)
+# - allkeys-lfu     : 가장 적게 액세스한 키를 제거
+# - volatile-lfu    : 만료시각이 설정된 key 중, 가장 적게 액세스한 키를 제거
