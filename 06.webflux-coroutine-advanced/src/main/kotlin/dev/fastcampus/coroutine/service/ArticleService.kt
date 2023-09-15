@@ -87,7 +87,7 @@ class ArticleService(
             }}
             ${request.to.sql {
                 param[QryArticle::to.name] = LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).plusDays(1L).atStartOfDay()
-                "AND  created_at < :to"
+                "AND  created_at <= :to"
             }}
         """.trimIndent())
 

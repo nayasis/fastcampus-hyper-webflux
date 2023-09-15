@@ -29,7 +29,7 @@ class Locker(
 
     suspend fun <T> lock(key: Any, fn: suspend () -> T): T {
         if( ! obtainLock(key) )
-            throw TimeoutException("fail to obtain lock (key: $key)")
+            throw TimeoutException("fail to obtain lock ($key)")
         try {
             return fn()
         } finally {
