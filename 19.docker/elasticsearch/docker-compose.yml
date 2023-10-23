@@ -5,7 +5,7 @@ services:
     build:
         context: .
         args:
-          ELK_VERSION: 7.15.2
+          ES_VERSION: 7.15.2
     container_name: es
     restart: unless-stopped
     ports:
