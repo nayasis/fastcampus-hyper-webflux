@@ -1,0 +1,38 @@
+### get
+GET http://localhost:8081/history/2
+
+### get all
+GET http://localhost:8081/history/all
+
+### save
+POST http://localhost:8081/history
+Content-Type: application/json
+
+{
+  "orderId": 3,
+  "userId": 11,
+  "description": "apple x 1, mango x 1",
+  "amount": 1899,
+  "status": "CAPTURE_SUCCESS",
+  "createdAt": "2023-11-01T14:23:22",
+  "updatedAt": "2023-11-01T14:23:23"
+}
+
+### search (page)
+GET http://localhost:8081/history/search?pageSize=5&pageNext=1672531200000
+
+### search (user)
+GET http://localhost:8081/history/search?userId=11&keyword=orange&userId=12
+
+### search (orderId)
+GET http://localhost:8081/history/search?orderId=1&orderId=2
+
+### search (keyword)
+GET http://localhost:8081/history/search?userId=11&keyword=man bana
+
+### search (date from ~ to)
+GET http://localhost:8081/history/search?fromDt=2023-02-04&toDt=2023-02-08
+
+### search (amount from ~ to)
+GET http://localhost:8081/history/search?fromAmount=1500&toAmount=2000&userId=11
+

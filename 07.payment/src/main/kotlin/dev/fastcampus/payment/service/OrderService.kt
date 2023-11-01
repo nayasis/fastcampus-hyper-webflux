@@ -1,40 +1,80 @@
 package dev.fastcampus.payment.service
 
-import dev.fastcampus.payment.exception.NotFoundException
+import dev.fastcampus.payment.common.Beans.Companion.beanOrderService
+import dev.fastcampus.payment.config.CacheKey
+import dev.fastcampus.payment.config.CacheManager
+import dev.fastcampus.payment.controller.ReqPayFailed
+import dev.fastcampus.payment.controller.ReqPaySucceed
+import dev.fastcampus.payment.controller.ResOrder
+import dev.fastcampus.payment.exception.NoOrderFound
+import dev.fastcampus.payment.exception.NoProductFound
 import dev.fastcampus.payment.model.Order
-import dev.fastcampus.payment.model.code.TxStatus
+import dev.fastcampus.payment.model.PgStatus
+import dev.fastcampus.payment.model.Product
+import dev.fastcampus.payment.model.ProductInOrder
 import dev.fastcampus.payment.repository.OrderRepository
+import dev.fastcampus.payment.repository.ProductInOrderRepository
 import dev.fastcampus.payment.repository.ProductRepository
 import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
-import org.aspectj.weaver.ast.Or
-import org.springframework.r2dbc.core.DatabaseClient
-import org.springframework.r2dbc.core.flow
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import org.springframework.web.reactive.function.client.WebClientRequestException
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
 @Service
 class OrderService(
-    private val productRepository: ProductRepository,
     private val orderRepository: OrderRepository,
-    private val dbclient: DatabaseClient,
+    private val productService: ProductService,
+    private val productInOrderRepository: ProductInOrderRepository,
+    private val tossPayApi: TossPayApi,
 ) {
 
     @Transactional
-    suspend fun create(userId: Long, prodId: Long): Order {
-        val product = productRepository.findById(prodId) ?: throw NotFoundException("No product(id:$prodId) found")
-        return orderRepository.save(Order(
-            userId,
-            prodId,
-            product.price,
-            product.localName,
+    suspend fun create(request: ReqCreateOrder): Order {
+        val prodIds = request.products.map { it.prodId }.toSet()
+        val productsById = request.products.mapNotNull { productService.get(it.prodId) }.associateBy { it.id }
+        prodIds.filter { ! productsById.containsKey(it) }.let { remains ->
+            if(remains.isNotEmpty())
+                throw NoProductFound("prod ids: $remains")
+        }
+
+        val amount = request.products.sumOf { productsById[it.prodId]!!.price * it.quantity }
+        val description = request.products.joinToString(", ") { "${productsById[it.prodId]!!.name} x ${it.quantity}" }
+
+        val newOrder = orderRepository.save(Order(
+            userId = request.userId,
+            description = description,
+            amount = amount,
+            pgOrderId = "${UUID.randomUUID()}".replace("-",""),
+            pgStatus = PgStatus.CREATE,
         ))
+
+        request.products.forEach {
+            productInOrderRepository.save( ProductInOrder(
+                orderId = newOrder.id,
+                prodId = it.prodId,
+                price = productsById[it.prodId]!!.price,
+                quantity = it.quantity,
+            ))
+        }
+        return newOrder
+    }
+
+    suspend fun get(orderId: Long): Order {
+        return orderRepository.findById(orderId) ?: throw NoOrderFound("id: $orderId")
+    }
+
+    suspend fun getAll(userId: Long): List<Order> {
+        return orderRepository.findAllByUserIdOrderByCreatedAtDesc(userId)
+    }
+
+    suspend fun delete(orderId: Long) {
+        orderRepository.deleteById(orderId)
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -42,128 +82,76 @@ class OrderService(
         orderRepository.save(order)
     }
 
-    suspend fun getByPaymentOrderId(paymentOrderId: String): Order {
-        return orderRepository.findByPaymentOrderId(paymentOrderId) ?: throw NotFoundException("No order found (payment order id: $paymentOrderId)")
-    }
-
-    suspend fun get(id: Long): Order {
-        return orderRepository.findById(id) ?: throw NotFoundException("No order found (id: $id)")
-    }
-
-    suspend fun retrieve(request: QryOrder): List<ResPurchaseHistory> {
-
-        val param = HashMap<String,Any>().apply {
-            put("userId", request.userId)
-            put("status", listOf(
-                TxStatus.REQUEST_CONFIRM,
-                TxStatus.SUCCESS,
-                TxStatus.FAIL,
-                TxStatus.NEED_CHECK,
-            ).map { it.name })
-            put("limit", request.limit)
-            put("offset", (request.page - 1) * request.limit)
+    @Transactional
+    suspend fun capture(request: ReqPaySucceed): Boolean {
+        val order = getOrderByPgOrderId(request.orderId).apply {
+            pgStatus = PgStatus.CAPTURE_REQUEST
+            beanOrderService.save(this)
         }
+        logger.debug { ">> order: $order" }
+        return try {
+            tossPayApi.confirm(request).also { logger.debug { ">> res: $it" } }
+            order.pgStatus = PgStatus.CAPTURE_SUCCESS
+            true
+        } catch (e: Exception) {
+            logger.error(e.message, e)
+            order.pgStatus = when {
+                e is WebClientRequestException -> PgStatus.CAPTURE_RETRY
+                e is WebClientResponseException -> PgStatus.CAPTURE_FAIL
+                else -> PgStatus.CAPTURE_FAIL
+            }
+            false
+        } finally {
+            orderRepository.save(order)
+        }
+    }
 
-        var sql = dbclient.sql("""
-            SELECT  A.id,
-                    A.prod_id,
-                    B.name AS prod_nm,
-                    A.description,
-                    A.amount,
-                    A.status,
-                    A.created_at
-            FROM    TB_ORDER A
-            JOIN    TB_PROD  B
-                    ON(A.prod_id = B.id)
-            WHERE   1=1
-            AND     A.user_id = :userId
-            AND     A.status IN (:status)
-            ${request.keyword.sql {
-                val keywords = it.trim().split(" ")
-                when(keywords.size) {
-                    0 -> ""
-                    else -> {
-                        val phrase = mutableListOf<String>()
-                        repeat(keywords.size) { i ->
-                            val key = "keyword_$i"
-                            param[key] = "%${keywords[i]}%"
-                            phrase.add("( A.description LIKE :$key OR B.name LIKE :$key )")
-                        }
-                        "AND ${phrase.joinToString(" AND\n")}"                        
-                    }
-                }
-            }}
-            ${request.fromDate.sql {
-                param["fromDate"] = it.toDate().atStartOfDay()
-                "AND  A.created_at >= :fromDate"
-            }}
-            ${request.toDate.sql {
-                param["toDate"] = it.toDate().plusDays(1).atStartOfDay()
-                "AND  A.created_at < :toDate"
-            }}
-            ${request.fromAmount.sql {
-                param["fromAmount"] = it
-                "AND  A.amount >= :fromAmount"
-            }}
-            ${request.toAmount.sql {
-                param["toAmount"] = it
-                "AND  A.amount <= :toAmount"
-            }}
-            ORDER BY A.created_at DESC
-            LIMIT :limit OFFSET :offset
-        """.trimIndent())
+    @Transactional
+    suspend fun authSucceed(request: ReqPaySucceed): Boolean {
+        val order = getOrderByPgOrderId(request.orderId).apply {
+            pgKey = request.paymentKey
+            pgStatus = PgStatus.AUTH_SUCCESS
+        }
+        try {
+            return if(order.amount != request.amount) {
+                logger.error { "Invalid auth because of amount (order: ${order.amount}, pay: ${request.amount})" }
+                order.pgStatus = PgStatus.AUTH_INVALID
+                false
+            } else {
+                true
+            }
+        } finally {
+            orderRepository.save(order)
+        }
+    }
 
-        logger.debug { ">> parameter\n$param" }
+    suspend fun getOrderByPgOrderId(pgOrderId: String): Order {
+        return orderRepository.findByPgOrderId(pgOrderId) ?:
+            throw NoOrderFound("pgOrderId: $pgOrderId")
+    }
 
-        param.forEach { key, value -> sql = sql.bind(key,value)  }
-
-
-
-        return sql.map { row, _ ->
-            ResPurchaseHistory(
-                orderId     = row.get("id") as Long,
-                prodId      = row.get("prod_id") as Long,
-                prodNm      = row.get("prod_nm") as String,
-                description = (row.get("description") as? String) ?: "",
-                amount      = row.get("amount") as Long,
-                status      = (row.get("status") as String).let { TxStatus.valueOf(it) },
-                createdAt   = row.get("created_at") as LocalDateTime,
-            )
-        }.flow().toList()
-
+    @Transactional
+    suspend fun authFailed(request: ReqPayFailed) {
+        val order = getOrderByPgOrderId(request.orderId)
+        if(order.pgStatus == PgStatus.CREATE) {
+            order.pgStatus == PgStatus.AUTH_FAIL
+            orderRepository.save(order)
+        }
+        logger.error { """
+            >> Fail on error
+              - request: $request
+              - order  : $order
+        """.trimIndent() }
     }
 
 }
 
-data class QryOrder(
+data class ReqCreateOrder(
     val userId: Long,
-    val keyword: String?,
-    val fromDate: String?,
-    val toDate: String?,
-    val fromAmount: Long?,
-    val toAmount: Long?,
-    val limit: Long = 10,
-    val page: Long = 1,
+    var products: List<ReqProdQuantity>,
 )
 
-private fun <T> T?.sql(function: (value: T) -> String): String {
-    return when {
-        this == null -> ""
-        this is String && this.isEmpty() -> ""
-        else -> function.invoke(this)
-    }
-}
-
-fun String.toDate(): LocalDate {
-    return LocalDate.parse(this, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-}
-
-data class ResPurchaseHistory(
-    val orderId: Long,
+data class ReqProdQuantity(
     val prodId: Long,
-    val prodNm: String,
-    val description: String,
-    val amount: Long,
-    val status: TxStatus,
-    val createdAt: LocalDateTime,
+    val quantity: Int,
 )

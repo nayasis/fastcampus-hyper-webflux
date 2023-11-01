@@ -1,42 +1,43 @@
 package dev.fastcampus.payment
 
-import dev.fastcampus.payment.common.rollback
+import dev.fastcampus.payment.model.Order
 import dev.fastcampus.payment.model.Product
+import dev.fastcampus.payment.model.ProductInOrder
 import dev.fastcampus.payment.repository.OrderRepository
+import dev.fastcampus.payment.repository.ProductInOrderRepository
 import dev.fastcampus.payment.repository.ProductRepository
-import io.kotest.common.runBlocking
 import io.kotest.core.spec.style.StringSpec
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.toList
+import io.kotest.matchers.shouldBe
 import mu.KotlinLogging
-import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.transaction.reactive.TransactionalOperator
-import org.springframework.transaction.reactive.executeAndAwait
+import org.springframework.test.context.ActiveProfiles
 
 private val logger = KotlinLogging.logger {}
 
 @SpringBootTest
+@ActiveProfiles("test")
 class PaymentApplicationTests(
-	@Autowired private val productRepository: ProductRepository,
-	@Autowired private val orderRepository: OrderRepository,
-	@Autowired private val rxtx: TransactionalOperator,
+	@Autowired prodRepository: ProductRepository,
+	@Autowired orderRepository: OrderRepository,
+	@Autowired prodInOrderRepository: ProductInOrderRepository,
 ): StringSpec({
-
-	"context load".config(false) {
-		rxtx.rollback { tx ->
-			listOf(
-				Product("coffee", 4500),
-				Product("pillow", 12000),
-			).let {
-				productRepository.saveAll(it).last()
-			}
-			productRepository.findAll().toList().let {
-				logger.debug { it.joinToString("\n","\n") }
-			}
-		}
+	"product" {
+		val prevCnt = prodRepository.count()
+		prodRepository.save(Product(1,"a",1000).apply { new = true })
+		val currCnt = prodRepository.count()
+		currCnt shouldBe prevCnt + 1
 	}
-
+	"order" {
+		val prevCnt = orderRepository.count()
+		orderRepository.save(Order(userId = 1)).also { logger.debug { it } }
+		val currCnt = orderRepository.count()
+		currCnt shouldBe prevCnt + 1
+	}
+	"prod in order" {
+		val prevCnt = prodInOrderRepository.count()
+		prodInOrderRepository.save(ProductInOrder(1,1,1,1)).also { logger.debug { it } }
+		val currCnt = prodInOrderRepository.count()
+		currCnt shouldBe prevCnt + 1
+	}
 })

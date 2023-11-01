@@ -1,96 +1,59 @@
 package dev.fastcampus.payment.controller
 
-import dev.fastcampus.payment.model.Order
-import dev.fastcampus.payment.model.code.TxStatus
-import dev.fastcampus.payment.repository.ProductRepository
 import dev.fastcampus.payment.service.OrderService
-import dev.fastcampus.payment.service.PaymentService
-import kotlinx.coroutines.flow.toList
-import mu.KotlinLogging
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-
-private val logger = KotlinLogging.logger {}
+import org.springframework.web.bind.annotation.PathVariable
 
 @Controller
 class ViewController(
-    private val productRepository: ProductRepository,
-    private val orderService: OrderService,
-    private val paymentService: PaymentService,
+    private val orderService: OrderService
 ) {
 
-    @GetMapping("/hello")
-    suspend fun index(@RequestParam name: String?, model: Model): String {
-
-        logger.debug { ">> name : $name" }
-
-//        model.addAttribute("name", ReactiveDataDriverContextVariable(name))
-        model.addAttribute("name", name)
-        val products = productRepository.findAll().toList()
-        logger.debug { ">> size : ${products.size}" }
-        model.addAttribute("products", products)
-
-        return "hello.html"
+    @GetMapping("/hello/{name}")
+    suspend fun hello(@PathVariable name: String, model: Model): String {
+        model.addAttribute("pname", name)
+        model.addAttribute("order", orderService.get(1).toResOrder())
+        return "hello-world.html"
     }
 
-    @GetMapping("/pay")
-    suspend fun pay(reqPay: ReqPay, model: Model): String {
-        val order = orderService.create(reqPay.userId, reqPay.prodId)
-        model.addAttribute("order", ResOrder.fromOrder(order))
+    @GetMapping("/pay/{orderId}")
+    suspend fun pay(@PathVariable orderId: Long, model: Model): String {
+        model.addAttribute("order", orderService.get(orderId))
         return "pay.html"
     }
 
     @GetMapping("/pay/success")
-    suspend fun isPaymentSuccessed(request: PaymentSuccess, model: Model): String {
-        return if(paymentService.confirm(request)) "pay_success.html" else {
-            "pay_fail.html"
-        }
+    suspend fun paySucceed(request: ReqPaySucceed): String {
+        if(!orderService.authSucceed(request))
+            return "pay-fail.html"
+        orderService.capture(request)
+        return "pay-success.html"
     }
 
-    @RequestMapping("/pay/fail")
-    suspend fun isPaymentFailed(request: PaymentFail): String {
-        return "pay_fail.html"
+    @GetMapping("/pay/fail")
+    suspend fun payFailed(request: ReqPayFailed): String {
+        orderService.authFailed(request)
+        return "pay-fail.html"
     }
 
 }
 
-data class ResOrder(
-    val userId: String,
-    val orderId: String,
-    val description: String,
-    val amount: Long,
-    val status: TxStatus,
-) {
-     companion object {
-         suspend fun fromOrder(order: Order): ResOrder {
-             return ResOrder(
-                 "user-${order.userId}",
-                 order.paymentOrderId ?: "",
-                 order.getProduct()?.name ?: "",
-                 order.amount,
-                 order.status,
-             )
-         }
-     }
-}
-
-data class ReqPay(
-    val userId: Long,
-    val prodId: Long,
-)
-
-data class PaymentSuccess(
-    val paymentType: String,
-    var orderId: String,
-    val paymentKey: String,
-    val amount: Long,
-)
-
-data class PaymentFail(
+data class ReqPayFailed(
     val code: String,
     val message: String,
-    val orderId: String
+    val orderId: String,
 )
+
+// {paymentType=[NORMAL], orderId=[3af54beac3a44ecca5798cbdc80cba19], paymentKey=[evl2J9MNzjkYG57Eba3G4XP9aOmdwEVpWDOxmA1QXRyZ4gLw], amount=[3000]}
+data class ReqPaySucceed(
+    val paymentKey: String,
+    val orderId: String,
+    val amount: Long,
+    val paymentType: TossPaymentType,
+)
+
+enum class TossPaymentType {
+    NORMAL, BRANDPAY, KEYIN
+}

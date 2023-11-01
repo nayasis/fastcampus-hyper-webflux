@@ -5,12 +5,12 @@ services:
     build:
         context: .
         args:
-          ELK_VERSION: 7.15.2
+          ES_VERSION: 7.15.2
     container_name: es
     restart: unless-stopped
     ports:
-      - 9200:9200
-      - 9300:9300
+      - 9200:9200 # client와 통신
+      - 9300:9300 # ES cluster 간 통신
     ulimits:
       memlock:
         soft: -1

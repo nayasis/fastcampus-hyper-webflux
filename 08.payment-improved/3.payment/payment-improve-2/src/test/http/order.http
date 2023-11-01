@@ -1,0 +1,13 @@
+### order
+POST http://localhost:8080/order/create
+Content-Type: application/json
+
+{
+  "userId": 11,
+  "products": [
+    {
+      "prodId": 1,
+      "quantity": 1
+    }
+  ]
+}
