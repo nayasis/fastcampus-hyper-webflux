@@ -1,0 +1,60 @@
+spring:
+  output:
+    ansi:
+      enabled: always
+  application:
+    name: payment
+  r2dbc:
+    url: r2dbc:pool:mariadb://localhost:3306/payment
+    username: user
+    password: 1234
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db-init/schema.sql
+      data-locations: classpath:db-init/test-data.sql
+  thymeleaf:
+    cache: off
+server:
+  shutdown: graceful
+  port: 8080
+  error:
+    include-message: always
+    include-exception: true
+    include-stacktrace: always
+logging:
+  level:
+    dev.fastcampus: debug
+    org.springframework.r2dbc.core: debug
+    org.springframework.r2dbc.connection.init: debug
+    org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler: off
+    org.springframework.web.HttpLogging: off
+  pattern:
+    console: "%d{HH:mm:ss.SSS}|%highlight(%-5level)|%X{txid:-}|%green(%t)|%blue(\\(%F:%L\\))|%msg%n"
+payment:
+  self:
+    domain: http://localhost:8080
+  toss:
+    domain: https://api.tosspayments.com
+#    domain: https://api.test.com
+    key:
+      client: test_ck_ma60RZblrqJp2zXypPb8wzYWBn14
+#      secret: test_sk_DnyRpQWGrNmP06bmJobVKwv1M9EN
+      secret: dGVzdF9za19EbnlScFFXR3JObVAwNmJtSm9iVkt3djFNOUVOOg==
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  r2dbc:
+    url: r2dbc:pool:h2:mem://localhost/payment
+  sql:
+    init:
+      mode: always
+      data-locations: ""

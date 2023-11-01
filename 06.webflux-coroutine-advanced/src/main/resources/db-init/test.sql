@@ -1,7 +1,5 @@
-INSERT INTO TB_ARTICLE
-(title, body, author_id, version, created_at, updated_at) VALUES
-( 'title 01', 'blabla 01', 1001, 1, '2023-01-01', '2023-01-01' );
--- INSERT INTO TB_ARTICLE (title, body, author_id, created_at, updated_at) VALUES ( 'title 01', 'blabla 01', 1001, '2023-01-01', '2023-01-01' );
+INSERT INTO TB_ARTICLE (title, body, author_id, version, created_at, updated_at)
+VALUES                 ( 'title 01', 'blabla 01', 1001, 1, '2023-01-01', '2023-01-01' );
 -- INSERT INTO TB_ARTICLE (title, body, author_id, created_at, updated_at) VALUES ( 'title 02', 'blabla 02', 1002, '2023-01-02', '2023-01-02' );
 -- INSERT INTO TB_ARTICLE (title, body, author_id, created_at, updated_at) VALUES ( 'title 03', 'blabla 03', 1003, '2023-01-03', '2023-01-03' );
 -- INSERT INTO TB_ARTICLE (title, body, author_id, created_at, updated_at) VALUES ( 'title 04', 'blabla 04', 1004, '2023-01-04', '2023-01-04' );

@@ -3,9 +3,9 @@ package dev.fastcampus.webfluxcoroutine.controller
 import dev.fastcampus.webfluxcoroutine.config.validator.DateString
 import dev.fastcampus.webfluxcoroutine.exception.ExternalApi
 import dev.fastcampus.webfluxcoroutine.exception.InvalidParameter
-import dev.fastcampus.webfluxcoroutine.service.Account
 import dev.fastcampus.webfluxcoroutine.service.AccountService
 import dev.fastcampus.webfluxcoroutine.service.AdvancedService
+import dev.fastcampus.webfluxcoroutine.service.ResAccount
 import jakarta.validation.Valid
 import jakarta.validation.constraints.*
 import kotlinx.coroutines.delay
@@ -52,13 +52,14 @@ class AdvancedController(
     }
 
     @GetMapping("/account/{id}")
-    suspend fun getAccount(@PathVariable id: Long): Account {
+    suspend fun getAccount(@PathVariable id: Long): ResAccount {
         return accountService.get(id)
     }
 
     @PutMapping("/account/{id}/{amount}")
-    suspend fun deposit(@PathVariable id: Long, @PathVariable amount: Long): Account {
-        return accountService.deposit(id,amount)
+    suspend fun deposit(@PathVariable id: Long, @PathVariable amount: Long): ResAccount {
+        accountService.deposit(id,amount)
+        return accountService.get(id)
     }
 
 }
