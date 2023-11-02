@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  vt:
+    container_name: vt
+    image: vt:0.0.1-SNAPSHOT
+    ports: #host : container
+      - "8080:8080"
+    environment:
+      - spring.datasource.url=jdbc:mariadb://10.202.96.73:3306/sample
+      - api.externalUrl=http://10.202.96.73:8081
+      - spring.threads.virtual.enable=false
