@@ -1,0 +1,58 @@
+### create
+POST {{domain}}/article
+Content-Type: application/json
+
+{
+  "title": "title test success ?",
+  "body": "body1",
+  "authorId": 1234
+}
+
+### get
+GET {{domain}}/article/1
+Content-Type: application/json
+
+<> 2023-08-25T164142.404.json
+<> 2023-08-25T163932.500.json
+<> 2023-08-25T163851.500.json
+<> 2023-08-25T163818.500.json
+
+### get all
+GET http://localhost:8080/article/all
+Content-Type: application/json
+
+> {%
+client.test("shoud not be empty", function (){
+    client.assert(response.status == 200)
+    client.assert(response.body != "")
+})
+ %}
+
+### get all (filter)
+GET http://localhost:8080/article/all?title=match
+Content-Type: application/json
+
+### update
+PUT http://localhost:8080/article/1
+Content-Type: application/json
+
+{
+  "title": "title matched"
+}
+
+### delete
+DELETE http://localhost:8080/article/1
+Content-Type: application/json
+
+
+### get
+GET {{domain}}/article/1
+Content-Type: application/json
+
+### get all (filter)
+GET http://localhost:8080/article/all?title=match
+Content-Type: application/json
+
+### delay
+GET http://localhost:8080/stress/delay
+Content-Type: application/json
